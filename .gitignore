@@ -1,0 +1,121 @@
+## Build results
+#MediClinic.WebApi.csproj
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Ww][Ii][Nn]32/
+*.exe
+*.dll
+*.pdb
+*.mdb
+*.cache
+*.log
+*.vspscc
+*.vssscc
+*.tmp
+*.bak
+
+logs/
+
+## VS IDE files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## Visual Studio Code
+.vscode/
+.history/
+*.code-workspace
+
+## Test results
+TestResults/
+*.coverage
+*.coveragexml
+*.trx
+
+## NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+*.nuproj
+*.lock.json
+.nuget/
+packages/
+!**/packages/build/
+!**/packages/repositories.config
+
+## Entity Framework
+Migrations/obj/
+*_i.c
+*_p.c
+*_h.h
+
+## Publish output
+publish/
+app.publish/
+*.pubxml
+*.publishproj
+
+## ASP.NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+App_Data/
+wwwroot/lib/
+node_modules/
+bower_components/
+
+## Logs
+*.log
+*.tlog
+
+## Configuration
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+## Rider / ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## Azure / AWS / Docker
+*.azurePubxml
+docker-compose.override.yml
+*.dcproj.user
+**/docker-compose*.yml.user
+secrets.json
+.env
+
+## Coverage / analysis
+coverage/
+coverage*.json
+*.lcov
+*.opencover.xml
+
+## Others
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.swp
+*.DS_Store
+*.orig
+*.rej
+
+## Optional: keep local tooling configs
+!.editorconfig
+!.gitignore

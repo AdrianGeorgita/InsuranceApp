@@ -1,0 +1,24 @@
+﻿using InsuranceApp.Application.Common.Pagination;
+using InsuranceApp.Application.Reports;
+using InsuranceApp.Application.Reports.DTOs;
+using InsuranceApp.Domain.Enums;
+using Microsoft.AspNetCore.Mvc;
+
+namespace InsuranceApp.WebApi.Controllers.Reports;
+
+[ApiController]
+[Route("api/admin/[controller]")]
+public class ReportsController(IReportService reportService) : BaseApiController
+{
+    [HttpGet("", Name = "ListAllReportsAsync")]
+    [ProducesResponseType(typeof(PagedResult<ReportDto>), 200)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+    [EndpointSummary("Get a paged list of reports")]
+    [EndpointDescription("Retrieves a filtered paged list of reports according to the passed pageNumber and pageSize and filters applied.")]
+    public async Task<ActionResult<PagedResult<ReportDto>>> ListAllClientsAsync([FromQuery] PageRequest pageRequest,
+        [FromQuery] ReportGroup groupedBy, [FromQuery] ReportFilter filter, CancellationToken ct)
+    {
+        var result = await reportService.ListAllReportsAsync(pageRequest, groupedBy, filter, ct);
+        return FromResult(result);
+    }
+}

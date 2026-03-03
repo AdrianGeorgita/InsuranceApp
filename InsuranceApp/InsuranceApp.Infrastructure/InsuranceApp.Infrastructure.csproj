@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Migrations\202602151900_CreatePoliciesReplica.sql" />
+    <None Remove="Migrations\202602161149_SeedPoliciesReplica.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202601151243_CreateGeographyTables.sql" />
+    <EmbeddedResource Include="Migrations\202601151252_CreateClientsTable.sql" />
+    <EmbeddedResource Include="Migrations\202601151306_CreateBuildingsTable.sql" />
+    <EmbeddedResource Include="Migrations\202601151430_SeedGeography.sql" />
+    <EmbeddedResource Include="Migrations\202601191316_AddTableMetadata.sql" />
+    <EmbeddedResource Include="Migrations\202601201256_SeedClients.sql" />
+    <EmbeddedResource Include="Migrations\202601201517_RemoveClientAddressNotNullConstraint.sql" />
+    <EmbeddedResource Include="Migrations\202601220945_SeedBuildings.sql" />
+    <EmbeddedResource Include="Migrations\202601221250_RemoveRiskIndicatorsJoinMetadata.sql" />
+    <EmbeddedResource Include="Migrations\202601221556_CreateAuditTable.sql" />
+    <EmbeddedResource Include="Migrations\202601281612_CreateSprint2Entities.sql" />
+    <EmbeddedResource Include="Migrations\202601290951_SeedSprint2.sql" />
+    <EmbeddedResource Include="Migrations\202602051417_AddReasonToAuditTable.sql" />
+    <EmbeddedResource Include="Migrations\202602151900_CreatePoliciesReplica.sql" />
+    <EmbeddedResource Include="Migrations\202602161149_SeedPoliciesReplica.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="dbup-core" Version="6.0.15" />
+	  <PackageReference Include="dbup-sqlserver" Version="6.0.16" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InsuranceApp.Application\InsuranceApp.Application.csproj" />
+    <ProjectReference Include="..\InsuranceApp.Domain\InsuranceApp.Domain.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="InsuranceApp.WebApi" />
+	</ItemGroup>
+
+</Project>

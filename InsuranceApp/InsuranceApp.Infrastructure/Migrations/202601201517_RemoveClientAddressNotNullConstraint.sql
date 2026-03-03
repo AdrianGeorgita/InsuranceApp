@@ -1,0 +1,2 @@
+ALTER TABLE dbo.Clients
+ALTER COLUMN [Address] NVARCHAR(255) NULL;

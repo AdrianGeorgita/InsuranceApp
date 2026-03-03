@@ -1,0 +1,23 @@
+﻿namespace InsuranceApp.Domain.Entities;
+
+public partial class AuditTableValueChange
+{
+    public Guid Id { get; set; }
+
+    public Guid EventId { get; set; }
+
+    public Guid UserId { get; set; }
+
+    public string TableName { get; set; } = null!;
+
+    public string ColumnName { get; set; } = null!;
+
+    public string RowId { get; set; } = null!;
+
+    public string? OldValue { get; set; }
+
+    public string? NewValue { get; set; }
+    public string? Reason { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+}
