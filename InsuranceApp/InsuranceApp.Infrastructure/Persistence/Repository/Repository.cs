@@ -3,6 +3,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Common.Repository;
+using InsuranceApp.Infrastructure.Persistence.QueryExtensions;
 using InsuranceApp.Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ public class Repository<TEntity, TKey>(DbContext context, IMapper mapper) : IRep
     {
         var totalSize = await Set.CountAsync(ct);
         var items = await Set.AsNoTracking()
+            .OrderByPrimaryKey<TEntity>(context)
             .Skip((pageRequest.PageNumber-1) * pageRequest.PageSize)
             .Take(pageRequest.PageSize)
             .ToListAsync(ct);
@@ -31,6 +33,7 @@ public class Repository<TEntity, TKey>(DbContext context, IMapper mapper) : IRep
     {
         var totalSize = await Set.CountAsync(ct);
         var items = await Set.AsNoTracking()
+            .OrderByPrimaryKey<TEntity>(context)
             .Skip((pageRequest.PageNumber-1) * pageRequest.PageSize)
             .Take(pageRequest.PageSize)
             .ProjectTo<TResult>(mapper.ConfigurationProvider)
