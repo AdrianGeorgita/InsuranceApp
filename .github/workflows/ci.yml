@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main", "dev" ]
 
@@ -43,8 +43,15 @@ jobs:
       run: dotnet build --no-restore -c Release
       working-directory: ./InsuranceApp
     - name: Start Database Server
+      env:
+        MSSQL_SA_PASSWORD: ${{ secrets.MSSQL_SA_PASSWORD }}
+        APP_DB_NAME: ${{ secrets.APP_DB_NAME }}
+        APP_DB_USER: ${{ secrets.APP_DB_USER }}
+        APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
       run: docker compose -f ./Docker/docker-compose.yaml up -d
     - name: Test
+      env:
+        ConnectionStrings__Default: ${{ secrets.CONNECTIONSTRINGS__DEFAULT }}
       run: dotnet test ./InsuranceApp.IntegrationTests/InsuranceApp.IntegrationTests.csproj --no-build --verbosity normal -c Release 
       working-directory: ./InsuranceApp
     - name: Stop Database Server
