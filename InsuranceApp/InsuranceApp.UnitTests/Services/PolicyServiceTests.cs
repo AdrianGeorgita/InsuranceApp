@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Globalization;
 using System.Linq.Expressions;
+using InsuranceApp.Domain.Models;
 
 namespace InsuranceApp.UnitTests.Services;
 
@@ -141,7 +142,11 @@ public class PolicyServiceTests
             Status = PolicyStatus.Active
         };
         var pricingContext = GetValidPricingContextDto(policy);
-        var adjustments = new List<decimal>() { 0.1000M, 0.4000M };
+        var adjustments = new List<Adjustment>()
+        {
+            new() {Type = AdjustmentTypeEnum.RiskFactorConfiguration, SubType = "BuildingType", Percentage = 0.1000M},
+            new() {Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "Country", Percentage = 0.4000M}
+        };
         _requestValidator.Setup(v => v.ValidateAsync(createRequest, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationResult());
         _policyRepository.Setup(r =>

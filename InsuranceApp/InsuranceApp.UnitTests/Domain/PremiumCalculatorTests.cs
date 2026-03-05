@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Domain.Models;
 using InsuranceApp.Domain.Premiums;
 
 namespace InsuranceApp.UnitTests.Domain;
@@ -8,8 +9,12 @@ public class PremiumCalculatorTests
     [Fact]
     public void Calculate_GivenAdjustments_ShouldReturnAdjustedPremium()
     {
-        var basePremium = 10000M;
-        var adjustments = new List<decimal>() { 0.2000M, 0.3000M };
+        const decimal basePremium = 10000M;
+        var adjustments = new List<Adjustment>()
+        {
+            new() {Percentage = 0.2000M},
+            new() {Percentage = 0.3000M}
+        };
 
         var result = PremiumCalculator.Calculate(basePremium, adjustments);
 
@@ -19,8 +24,8 @@ public class PremiumCalculatorTests
     [Fact]
     public void Calculate_GivenNoAdjustments_ShouldBasePremium()
     {
-        var basePremium = 10000M;
-        var adjustments = new List<decimal>();
+        const decimal basePremium = 10000M;
+        var adjustments = new List<Adjustment>();
 
         var result = PremiumCalculator.Calculate(basePremium, adjustments);
 
