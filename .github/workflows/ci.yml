@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./InsuranceApp
+      - name: Build
+        run: dotnet build --no-restore -c Release
+        working-directory: ./InsuranceApp
+      - name: Run Unit Tests
+        run: dotnet test ./InsuranceApp.UnitTests/InsuranceApp.UnitTests.csproj --no-build -c Release
+        working-directory: ./InsuranceApp
+  integration-tests:
+
+    needs: unit-tests
+    runs-on: ubuntu-latest
+  
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./InsuranceApp
+    - name: Build
+      run: dotnet build --no-restore -c Release
+      working-directory: ./InsuranceApp
+    - name: Start Database Server
+      run: docker compose -f ./Docker/docker-compose.yaml up -d
+    - name: Test
+      run: dotnet test ./InsuranceApp.IntegrationTests/InsuranceApp.IntegrationTests.csproj --no-build --verbosity normal -c Release 
+      working-directory: ./InsuranceApp
+    - name: Stop Database Server
+      if: always()
+      run: docker compose -f ./Docker/docker-compose.yaml down -v
