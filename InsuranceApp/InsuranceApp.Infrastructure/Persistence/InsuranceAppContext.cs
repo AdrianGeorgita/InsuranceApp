@@ -68,6 +68,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Role).HasMaxLength(64);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -88,6 +89,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.TableName).HasMaxLength(128);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -114,6 +116,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Phone).HasMaxLength(15);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
             entity.Property(e => e.Status)
                 .HasConversion(
@@ -136,6 +139,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.SurfaceArea).HasColumnType("decimal(6, 2)");
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
 
             entity.HasOne(d => d.City).WithMany(p => p.Buildings)
@@ -179,6 +183,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
 
             entity.HasOne(d => d.County).WithMany(p => p.Cities)
@@ -205,6 +210,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Type).HasMaxLength(20);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -229,6 +235,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -245,6 +252,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
 
             entity.HasOne(d => d.Country).WithMany(p => p.Counties)
@@ -265,6 +273,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Name).HasMaxLength(256);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -283,6 +292,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(128);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -304,6 +314,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(64);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
 
             entity.HasOne(d => d.Broker).WithMany(p => p.Policies)
@@ -376,6 +387,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.BuildingType).HasConversion<string>().HasMaxLength(50);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
@@ -391,6 +403,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.UpdatedAt)
                 .HasPrecision(0)
+                .IsRowVersion()
                 .HasDefaultValueSql(SysUtcDateTime);
         });
 
