@@ -1,5 +1,6 @@
 ﻿using InsuranceApp.Domain.Entities;
 using InsuranceApp.Domain.Enums;
+using InsuranceApp.Domain.Models;
 using InsuranceApp.Domain.Pricing.ConfigurationStrategies.Fees;
 using InsuranceApp.Domain.Pricing.ConfigurationStrategies.RiskFactors;
 
@@ -16,19 +17,19 @@ public class PricingCalculator(IEnumerable<IRiskFactorConfigurationStrategy> ris
         _feeConfigurationStrategies =
             feeConfigurationStrategies.ToDictionary(s => s.Type);
 
-    public IEnumerable<decimal> GetAllApplicableAdjustments(Building building, Broker broker,
+    public IEnumerable<Adjustment> GetAllApplicableAdjustments(Building building, Broker broker,
         IEnumerable<RiskFactorConfiguration> riskFactorConfigurations, IEnumerable<FeeConfiguration> feeConfigurations)
     {
-        var adjustments = new List<decimal>();
+        var adjustments = new List<Adjustment>();
         adjustments.AddRange(GetApplicableRiskFactorConfigurations(riskFactorConfigurations, building));
         adjustments.AddRange(GetApplicableFeeConfigurations(feeConfigurations, building));
-        adjustments.Add(GetBrokerCommission(broker));
+        adjustments.Add(GetBrokerCommissionAdjustment(broker));
         return adjustments;
     }
 
-    private List<decimal> GetApplicableFeeConfigurations(IEnumerable<FeeConfiguration> configurations, Building building)
+    private List<Adjustment> GetApplicableFeeConfigurations(IEnumerable<FeeConfiguration> configurations, Building building)
     {
-        var adjustments = new List<decimal>();
+        var adjustments = new List<Adjustment>();
         foreach (var group in configurations.GroupBy(c => c.Type))
         {
             if (!_feeConfigurationStrategies.TryGetValue(group.Key, out var strategy))
@@ -39,9 +40,9 @@ public class PricingCalculator(IEnumerable<IRiskFactorConfigurationStrategy> ris
         return adjustments;
     }
 
-    private List<decimal> GetApplicableRiskFactorConfigurations(IEnumerable<RiskFactorConfiguration> configurations, Building building)
+    private List<Adjustment> GetApplicableRiskFactorConfigurations(IEnumerable<RiskFactorConfiguration> configurations, Building building)
     {
-        var adjustments = new List<decimal>();
+        var adjustments = new List<Adjustment>();
         foreach (var group in configurations.GroupBy(c => c.Level))
         {
             if (!_riskFactorConfigurationStrategies.TryGetValue(group.Key, out var strategy))
@@ -53,5 +54,6 @@ public class PricingCalculator(IEnumerable<IRiskFactorConfigurationStrategy> ris
         return adjustments;
     }
 
-    private static decimal GetBrokerCommission(Broker broker) => broker?.CommissionPercentage ?? 0M;
+    private static Adjustment GetBrokerCommissionAdjustment(Broker broker) => new Adjustment() {Type = AdjustmentTypeEnum.BrokerCommission, 
+        Percentage = broker?.CommissionPercentage ?? 0M};
 }
