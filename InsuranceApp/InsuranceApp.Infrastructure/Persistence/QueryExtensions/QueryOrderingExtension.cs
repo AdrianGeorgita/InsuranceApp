@@ -11,7 +11,7 @@ public static class QueryOrderingExtension
         var primaryKey = (entityType?.FindPrimaryKey()) ?? throw new InvalidOperationException($"No primary key defined for {typeof(TEntity).Name}");
         var property = primaryKey.Properties[0];
 
-        return query.OrderBy(e => EF.Property<object>(e, property.Name));
+        return query.OrderBy(e => EF.Property<object>(e!, property.Name));
     }
 }
 
