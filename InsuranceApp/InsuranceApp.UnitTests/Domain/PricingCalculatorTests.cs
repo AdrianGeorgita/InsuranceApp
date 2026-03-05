@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using InsuranceApp.Domain.Entities;
 using InsuranceApp.Domain.Enums;
+using InsuranceApp.Domain.Models;
 using InsuranceApp.Domain.Pricing;
 using InsuranceApp.Domain.Pricing.ConfigurationStrategies.Fees;
 using InsuranceApp.Domain.Pricing.ConfigurationStrategies.RiskFactors;
@@ -23,21 +24,21 @@ public class PricingCalculatorTests
             .Setup(s => s.GetAdjustments(
                 building,
                 It.Is<IEnumerable<RiskFactorConfiguration>>(g => g.All(x => x.Level == RiskFactorConfigurationLevel.BuildingType))))
-            .Returns([0.1000M]);
+            .Returns([new Adjustment(){Type = AdjustmentTypeEnum.RiskFactorConfiguration, SubType = "BuildingType", Percentage = 0.1000M}]);
         var feeAdminStrategy = new Mock<IFeeConfigurationStrategy>();
         feeAdminStrategy.SetupGet(s => s.Type).Returns(FeeConfigurationType.AdminFee);
         feeAdminStrategy
             .Setup(s => s.GetAdjustments(
                 building,
                 It.Is<IEnumerable<FeeConfiguration>>(g => g.All(x => x.Type == FeeConfigurationType.AdminFee))))
-            .Returns([0.0010M]);
+            .Returns([new Adjustment() { Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "AdminFee", Percentage = 0.0010M }]);
         var brokerCommissionStrategy = new Mock<IFeeConfigurationStrategy>();
         brokerCommissionStrategy.SetupGet(s => s.Type).Returns(FeeConfigurationType.BrokerCommission);
         brokerCommissionStrategy
             .Setup(s => s.GetAdjustments(
                 building,
                 It.Is<IEnumerable<FeeConfiguration>>(g => g.All(x => x.Type == FeeConfigurationType.BrokerCommission))))
-            .Returns([0.0050M]);
+            .Returns([new Adjustment() { Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "BrokerCommission", Percentage = 0.0050M }]);
         var pricingCalculator = new PricingCalculator(
             [riskBuildingTypeStrategy.Object],
             [feeAdminStrategy.Object, brokerCommissionStrategy.Object]);
@@ -45,7 +46,12 @@ public class PricingCalculatorTests
         var result = pricingCalculator.GetAllApplicableAdjustments(building, broker, riskConfigurations, feeConfigurations).ToList();
 
         result.Should().HaveCount(4, "The configurations should return 4 adjustments");
-        result.Should().Contain([0.1000M, 0.0010M, 0.0050M, 0.0020M]);
+        result.Should().BeEquivalentTo([
+            new Adjustment() { Type = AdjustmentTypeEnum.RiskFactorConfiguration, SubType = "BuildingType", Percentage = 0.1000M },
+            new Adjustment() { Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "AdminFee", Percentage = 0.0010M },
+            new Adjustment() { Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "BrokerCommission", Percentage = 0.0050M },
+            new Adjustment() { Type = AdjustmentTypeEnum.BrokerCommission, Percentage = 0.0020M}
+        ]);
         riskBuildingTypeStrategy.Verify(s => s.GetAdjustments(building, It.IsAny<IEnumerable<RiskFactorConfiguration>>()), Times.Once);
         feeAdminStrategy.Verify(s => s.GetAdjustments(building, It.IsAny<IEnumerable<FeeConfiguration>>()), Times.Once);
         brokerCommissionStrategy.Verify(s => s.GetAdjustments(building, It.IsAny<IEnumerable<FeeConfiguration>>()), Times.Once);
@@ -67,21 +73,21 @@ public class PricingCalculatorTests
             .Setup(s => s.GetAdjustments(
                 building,
                 It.Is<IEnumerable<RiskFactorConfiguration>>(g => g.All(x => x.Level == RiskFactorConfigurationLevel.BuildingType))))
-            .Returns([0.1000M]);
+            .Returns([new Adjustment() { Type = AdjustmentTypeEnum.RiskFactorConfiguration, SubType = "BuildingType", Percentage = 0.1000M }]);
         var feeAdminStrategy = new Mock<IFeeConfigurationStrategy>();
         feeAdminStrategy.SetupGet(s => s.Type).Returns(FeeConfigurationType.AdminFee);
         feeAdminStrategy
             .Setup(s => s.GetAdjustments(
                 building,
                 It.Is<IEnumerable<FeeConfiguration>>(g => g.All(x => x.Type == FeeConfigurationType.AdminFee))))
-            .Returns([0.0010M]);
+            .Returns([new Adjustment() { Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "AdminFee", Percentage = 0.0010M }]);
         var brokerCommissionStrategy = new Mock<IFeeConfigurationStrategy>();
         brokerCommissionStrategy.SetupGet(s => s.Type).Returns(FeeConfigurationType.BrokerCommission);
         brokerCommissionStrategy
             .Setup(s => s.GetAdjustments(
                 building,
                 It.Is<IEnumerable<FeeConfiguration>>(g => g.All(x => x.Type == FeeConfigurationType.BrokerCommission))))
-            .Returns([0.0050M]);
+            .Returns([new Adjustment() { Type = AdjustmentTypeEnum.FeeConfiguration, SubType = "BrokerCommission", Percentage = 0.0050M }]);
         var pricingCalculator = new PricingCalculator(
             [riskBuildingTypeStrategy.Object],
             [feeAdminStrategy.Object, brokerCommissionStrategy.Object]);
@@ -89,7 +95,7 @@ public class PricingCalculatorTests
         var result = pricingCalculator.GetAllApplicableAdjustments(building, broker, riskConfigurations, feeConfigurations).ToList();
 
         result.Should().HaveCount(1, "The configurations should return 1 adjustment");
-        result.Should().BeEquivalentTo(new List<decimal>() { 0M });
+        result.Should().BeEquivalentTo(new List<Adjustment>() { new (){Type = AdjustmentTypeEnum.BrokerCommission, Percentage = 0M} });
     }
 
     private Building GetValidBuilding() => new Building()
