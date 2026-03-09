@@ -4,6 +4,7 @@ using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Common.Repository;
 using InsuranceApp.Application.Policies.DTOs;
 using InsuranceApp.Domain.Entities;
+using InsuranceApp.Domain.Enums;
 using InsuranceApp.Infrastructure.Persistence.QueryExtensions;
 using InsuranceApp.Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,12 @@ public class PolicyRepository(InsuranceAppContext db, IMapper mapper) : Reposito
             .Include(p => p.Client)
             .Include(p => p.Broker)
             .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<IEnumerable<Policy>> GetExpiredPoliciesAsync(CancellationToken ct)
+    {
+        return await db.Policies.Where(p => (p.Status == PolicyStatus.Active || p.Status == PolicyStatus.Draft)
+                                            && p.EndDate <= DateTime.UtcNow).AsNoTracking().ToListAsync(ct);
     }
 }
 

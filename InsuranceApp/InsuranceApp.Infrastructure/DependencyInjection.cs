@@ -3,6 +3,7 @@ using InsuranceApp.Application.Common.Messaging;
 using InsuranceApp.Application.Common.Persistence;
 using InsuranceApp.Application.Common.Repository;
 using InsuranceApp.Application.Common.Validation;
+using InsuranceApp.Infrastructure.Jobs;
 using InsuranceApp.Infrastructure.Messaging.Auditing;
 using InsuranceApp.Infrastructure.Messaging.Reporting;
 using InsuranceApp.Infrastructure.Persistence;
@@ -59,6 +60,7 @@ internal static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
+        services.AddScoped<PolicyExpiryJob, PolicyExpiryJob>();
         return services;
     }
 
