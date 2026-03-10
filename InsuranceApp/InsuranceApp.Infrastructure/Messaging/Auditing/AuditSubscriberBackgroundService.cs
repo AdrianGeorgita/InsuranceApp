@@ -2,13 +2,15 @@
 using InsuranceApp.Application.Common.Audit;
 using InsuranceApp.Domain.Entities;
 using InsuranceApp.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace InsuranceApp.Infrastructure.Messaging.Auditing;
 
 public class AuditSubscriberBackgroundService(IAuditEventQueue queue, IServiceScopeFactory scopeFactory,
-    IMapper mapper) : BackgroundService
+    IMapper mapper, ILogger<AuditSubscriberBackgroundService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -21,6 +23,10 @@ public class AuditSubscriberBackgroundService(IAuditEventQueue queue, IServiceSc
                     continue;
                 await ProcessEventAsync(auditEvent, stoppingToken);
 
+            }
+            catch (DbUpdateException ex)
+            {
+                logger.LogError(ex, "There was an error inserting the audit entry.");
             }
             catch (OperationCanceledException)
             {

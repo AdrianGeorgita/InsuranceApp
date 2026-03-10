@@ -22,6 +22,10 @@ public class PolicyReplicaUpdaterBackgroundService(IPolicyEventQueue queue,
                 await ProcessEventAsync(policyEvent.Policy, stoppingToken);
 
             }
+            catch (DbUpdateException ex)
+            {
+                logger.LogError(ex, "Upsert failed during a Policy Replica operation.");
+            }
             catch (OperationCanceledException)
             {
                 break;
