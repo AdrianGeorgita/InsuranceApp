@@ -30,6 +30,8 @@ internal static class DependencyInjection
         services.AddScoped<DbContext>(sp => sp.GetRequiredService<InsuranceAppContext>());
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<InsuranceAppContext>());
 
+        services.RegisterHealthChecks();
+
         services.AddScoped<IRequestValidator, RequestValidator>();
 
         services.AddStrategies();
@@ -89,6 +91,14 @@ internal static class DependencyInjection
         services.AddSingleton<IAuditEventQueue, AuditEventQueue>();
         services.AddScoped<IAuditEventPublisher, AuditEventPublisher>();
         services.AddHostedService<AuditSubscriberBackgroundService>();
+
+        return services;
+    }
+
+    private static IServiceCollection RegisterHealthChecks(this IServiceCollection services)
+    {
+        services.AddHealthChecks()
+            .AddDbContextCheck<InsuranceAppContext>(tags: ["ready"]);
 
         return services;
     }

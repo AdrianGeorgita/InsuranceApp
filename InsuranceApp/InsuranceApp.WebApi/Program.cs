@@ -105,6 +105,8 @@ public class Program
 
         app.AddBackgroundJobs();
 
+        app.MapHealthCheckEndpoints();
+
         await app.RunAsync();
     }
 }
