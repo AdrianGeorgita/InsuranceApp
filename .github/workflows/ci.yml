@@ -56,7 +56,7 @@ jobs:
         ASPNETCORE_ENVIRONMENT: CI
         ConnectionStrings__Default: ${{ secrets.CONNECTIONSTRINGS__DEFAULT }}
       run: |
-        dotnet run --project ./InsuranceApp.WebApi/InsuranceApp.WebApi.csproj --no-build -c Release > app.log 2>&1 &
+        dotnet run --project ./InsuranceApp.WebApi/InsuranceApp.WebApi.csproj --no-build --no-launch-profile -c Release > app.log 2>&1 &
         echo $! > app.pid
       working-directory: ./InsuranceApp
       
