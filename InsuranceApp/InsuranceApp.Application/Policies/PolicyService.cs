@@ -85,6 +85,18 @@ public class PolicyService(IPolicyRepository policyRepository, IPriceFetchServic
         return Result.Ok(existingPolicy.PolicyNumber);
     }
 
+    public async Task<Result<string>> DeletePolicyByIdAsync(string policyNumber, CancellationToken ct)
+    {
+        var existingPolicy = await policyRepository.GetDetailedPolicyByIdAsync(policyNumber, ct);
+        if (existingPolicy is null)
+            return Result.Fail<string>(new NotFoundError($"Policy '{policyNumber}' not found."));
+
+        policyRepository.Remove(existingPolicy);
+
+        logger.LogInformation("Policy with number '{PolicyNumber}' has been deleted.", existingPolicy.PolicyNumber);
+        return Result.Ok(existingPolicy.PolicyNumber);
+    }
+
     private async Task LogPolicyStatusChange(PolicyStatus oldStatus, PolicyStatus newStatus,
         string policyNumber, Guid brokerId, string? reason, CancellationToken ct)
     {

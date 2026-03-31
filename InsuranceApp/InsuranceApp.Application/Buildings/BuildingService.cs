@@ -46,6 +46,18 @@ public class BuildingService(IBuildingRepository buildingRepository, IRiskIndica
         return Result.Ok(existingBuilding.Id);
     }
 
+    public async Task<Result<Guid>> DeleteBuildingByIdAsync(Guid buildingId, CancellationToken ct)
+    {
+        var existingBuilding = await buildingRepository.GetAsync(buildingId, ct);
+        if (existingBuilding is null)
+            return Result.Fail<Guid>(new NotFoundError($"Building '{buildingId}' not found."));
+
+        buildingRepository.Remove(existingBuilding);
+        logger.LogInformation("Building with id: '{BuildingId}' has been deleted.", existingBuilding.Id);
+
+        return Result.Ok(existingBuilding.Id);
+    }
+
     private async Task UpdateBuildingRiskIndicators(Building building, UpdateBuildingRequest? updateRequest, CancellationToken ct)
     {
         var requestedIds = updateRequest?.RiskIndicatorIds.Distinct().ToList();

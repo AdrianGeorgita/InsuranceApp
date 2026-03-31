@@ -10,5 +10,6 @@ public interface IClientService
 
     Task<Result<Guid>> CreateClientAsync(CreateClientRequest createClientDto, CancellationToken ct);
     Task<Result<Guid>> UpdateClientAsync(Guid clientId, UpdateClientRequest updateClientDto, CancellationToken ct);
+    Task<Result<Guid>> DeleteClientByIdAsync(Guid clientId, CancellationToken ct);
 }
 
