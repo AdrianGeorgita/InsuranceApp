@@ -16,6 +16,7 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
             .HasPrecision(0)
             .HasDefaultValueSql(DbConstants.SysUtcDateTime);
         builder.Property(e => e.ExchangeRateToBase).HasColumnType("decimal(10, 6)");
+        builder.Property(e => e.IsActive).HasDefaultValue(true);
         builder.Property(e => e.Name).HasMaxLength(256);
         builder.Property(e => e.UpdatedAt)
             .HasPrecision(0)

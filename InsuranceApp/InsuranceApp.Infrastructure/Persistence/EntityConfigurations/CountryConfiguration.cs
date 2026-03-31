@@ -16,6 +16,7 @@ public class CountryConfiguration : IEntityTypeConfiguration<Country>
         builder.HasIndex(e => e.Iso3, "UQ_Countries_ISO3").IsUnique();
 
         builder.Property(e => e.Id).ValueGeneratedNever();
+        builder.Property(e => e.IsActive).HasDefaultValue(true);
         builder.Property(e => e.CreatedAt)
             .HasPrecision(0)
             .HasDefaultValueSql(DbConstants.SysUtcDateTime);

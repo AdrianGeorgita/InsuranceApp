@@ -11,6 +11,10 @@ public class PolicyConfiguration : IEntityTypeConfiguration<Policy>
     {
         builder.HasKey(e => e.PolicyNumber).HasName("PK__Policies__46DA0156E861CE11");
 
+        builder.HasQueryFilter(x => x.IsDeleted == false);
+
+        builder.HasIndex(e => e.PolicyNumber, "IX_Policies_Active").HasFilter("([IsDeleted]=(0))");
+
         builder.HasIndex(e => new { e.ClientId, e.BuildingId, e.BrokerId }, "UQ_Policies_Client_Building_Broker").IsUnique();
 
         builder.Property(e => e.PolicyNumber).HasMaxLength(256);

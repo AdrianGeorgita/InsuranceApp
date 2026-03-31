@@ -1,6 +1,8 @@
-﻿namespace InsuranceApp.Domain.Entities;
+﻿using InsuranceApp.Domain.Common.Interfaces;
 
-public partial class Building
+namespace InsuranceApp.Domain.Entities;
+
+public partial class Building : IAuditable, ISoftDeletable
 {
     public Guid Id { get; set; }
 
@@ -20,10 +22,6 @@ public partial class Building
 
     public decimal InsuredValue { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
-
     public virtual City City { get; set; } = null!;
 
     public virtual Client Owner { get; set; } = null!;
@@ -31,4 +29,10 @@ public partial class Building
     public virtual ICollection<Policy> Policies { get; set; } = new List<Policy>();
 
     public virtual ICollection<RiskIndicator> RiskIndicators { get; set; } = new List<RiskIndicator>();
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }

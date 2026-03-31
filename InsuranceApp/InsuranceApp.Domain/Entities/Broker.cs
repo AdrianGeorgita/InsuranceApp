@@ -1,8 +1,9 @@
-﻿using InsuranceApp.Domain.Enums;
+﻿using InsuranceApp.Domain.Common.Interfaces;
+using InsuranceApp.Domain.Enums;
 
 namespace InsuranceApp.Domain.Entities;
 
-public partial class Broker
+public partial class Broker : IAuditable, ISoftDeletable
 {
     public Guid Id { get; set; }
 
@@ -18,9 +19,11 @@ public partial class Broker
 
     public decimal? CommissionPercentage { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public virtual ICollection<Policy> Policies { get; set; } = new List<Policy>();
 
+    public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<Policy> Policies { get; set; } = new List<Policy>();
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }

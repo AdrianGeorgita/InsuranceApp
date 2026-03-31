@@ -18,6 +18,7 @@ public class RiskFactorConfigurationConfiguration : IEntityTypeConfiguration<Ris
         builder.Property(e => e.CreatedAt)
             .HasPrecision(0)
             .HasDefaultValueSql(DbConstants.SysUtcDateTime);
+        builder.Property(e => e.IsActive).HasDefaultValue(true);
         builder.Property(e => e.Level).HasConversion<string>().HasMaxLength(64);
         builder.Property(e => e.BuildingType).HasConversion<string>().HasMaxLength(50);
         builder.Property(e => e.UpdatedAt)

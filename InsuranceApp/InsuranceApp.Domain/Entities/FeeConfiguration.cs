@@ -1,8 +1,9 @@
-﻿using InsuranceApp.Domain.Enums;
+﻿using InsuranceApp.Domain.Common.Interfaces;
+using InsuranceApp.Domain.Enums;
 
 namespace InsuranceApp.Domain.Entities;
 
-public partial class FeeConfiguration
+public partial class FeeConfiguration : IAuditable
 {
     public Guid Id { get; set; }
 

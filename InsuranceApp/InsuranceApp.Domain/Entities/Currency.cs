@@ -1,6 +1,8 @@
-﻿namespace InsuranceApp.Domain.Entities;
+﻿using InsuranceApp.Domain.Common.Interfaces;
 
-public partial class Currency
+namespace InsuranceApp.Domain.Entities;
+
+public partial class Currency : IAuditable
 {
     public string Code { get; set; } = null!;
 

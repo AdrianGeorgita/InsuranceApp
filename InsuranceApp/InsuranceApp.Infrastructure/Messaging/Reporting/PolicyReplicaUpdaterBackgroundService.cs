@@ -70,7 +70,8 @@ public class PolicyReplicaUpdaterBackgroundService(IPolicyEventQueue queue,
         StartDate = policy.StartDate,
         EndDate = policy.EndDate,
         CurrencyCode = policy.CurrencyCode,
-        FinalPremium = policy.FinalPremium
+        FinalPremium = policy.FinalPremium,
+        IsDeleted = policy.IsDeleted
     };
 
     private static async Task UpsertReplicaAsync(InsuranceAppContext db, PolicyProjection src, 
@@ -95,6 +96,7 @@ public class PolicyReplicaUpdaterBackgroundService(IPolicyEventQueue queue,
         replica.EndDate = src.EndDate;
         replica.FinalPremium = src.FinalPremium;
         replica.CurrencyCode = src.CurrencyCode;
+        replica.IsDeleted = src.IsDeleted;
         replica.FinalPremiumInBaseCurrency = src.FinalPremium * rateToBase;
 
         await db.SaveChangesAsync(ct);
