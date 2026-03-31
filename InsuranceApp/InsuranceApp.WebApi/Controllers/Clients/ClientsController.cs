@@ -61,6 +61,18 @@ public class ClientsController(IClientService clientService, IClientBuildingServ
         return FromResult(result);
     }
 
+    [HttpDelete("{clientId:guid}", Name = "DeleteClientByIdAsync")]
+    [ProducesResponseType(typeof(Guid), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 404)]
+    [EndpointSummary("Delete a client")]
+    [EndpointDescription("Soft deletes a client using its unique identifier.")]
+    [UnitOfWork]
+    public async Task<ActionResult<Guid>> DeleteClientByIdAsync(Guid clientId, CancellationToken ct)
+    {
+        var result = await clientService.DeleteClientByIdAsync(clientId, ct);
+        return FromResult(result);
+    }
+
     [HttpGet("{clientId:guid}/buildings", Name = "ListAllClientBuildingsAsync")]
     [ProducesResponseType(typeof(PagedResult<BuildingDto>), 200)]
     [ProducesResponseType(typeof(PagedResult<ProblemDetails>), 404)]

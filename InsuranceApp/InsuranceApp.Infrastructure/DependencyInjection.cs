@@ -7,6 +7,7 @@ using InsuranceApp.Infrastructure.Jobs;
 using InsuranceApp.Infrastructure.Messaging.Auditing;
 using InsuranceApp.Infrastructure.Messaging.Reporting;
 using InsuranceApp.Infrastructure.Persistence;
+using InsuranceApp.Infrastructure.Persistence.Interceptors;
 using InsuranceApp.Infrastructure.Persistence.Repository;
 using InsuranceApp.Infrastructure.Persistence.Repository.Reports;
 using InsuranceApp.Infrastructure.Persistence.Repository.Reports.Strategies;
@@ -22,9 +23,11 @@ internal static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<InsuranceAppContext>(options =>
+        services.RegisterDbContextInterceptors();
+        services.AddDbContext<InsuranceAppContext>((sp, options) =>
         {
             options.UseSqlServer(configuration.GetConnectionString("Default"));
+            options.AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>());
         });
 
         services.AddScoped<DbContext>(sp => sp.GetRequiredService<InsuranceAppContext>());
@@ -99,6 +102,13 @@ internal static class DependencyInjection
     {
         services.AddHealthChecks()
             .AddDbContextCheck<InsuranceAppContext>(tags: ["ready"]);
+
+        return services;
+    }
+
+    private static IServiceCollection RegisterDbContextInterceptors(this IServiceCollection services)
+    {
+        services.AddScoped<SoftDeleteInterceptor, SoftDeleteInterceptor>();
 
         return services;
     }

@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Remove="Migrations\202602151900_CreatePoliciesReplica.sql" />
     <None Remove="Migrations\202602161149_SeedPoliciesReplica.sql" />
+    <None Remove="Migrations\202603310932_AddSoftDeleteColumns.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,9 @@
     <EmbeddedResource Include="Migrations\202602051417_AddReasonToAuditTable.sql" />
     <EmbeddedResource Include="Migrations\202602151900_CreatePoliciesReplica.sql" />
     <EmbeddedResource Include="Migrations\202602161149_SeedPoliciesReplica.sql" />
+    <EmbeddedResource Include="Migrations\202603310932_AddSoftDeleteColumns.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

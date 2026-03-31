@@ -31,4 +31,6 @@ public partial class PoliciesReplica
     public decimal FinalPremium { get; set; }
 
     public decimal FinalPremiumInBaseCurrency { get; set; }
+
+    public bool IsDeleted { get; set; }
 }

@@ -97,4 +97,17 @@ public class BrokerService(IBrokerRepository brokerRepository, IRequestValidator
 
         return Result.Ok();
     }
+
+    public async Task<Result<Guid>> DeleteBrokerAsync(Guid brokerId, CancellationToken ct)
+    {
+        var existingBroker = await brokerRepository.GetAsync(brokerId, ct);
+        if (existingBroker is null)
+            return Result.Fail<Guid>(new NotFoundError($"Broker '{brokerId}' not found."));
+
+        brokerRepository.Remove(existingBroker);
+
+        logger.LogInformation("Broker with id '{BrokerId}' has been deleted.", existingBroker.Id);
+
+        return Result.Ok(existingBroker.Id);
+    }
 }

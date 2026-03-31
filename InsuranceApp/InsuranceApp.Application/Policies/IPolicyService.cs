@@ -1,7 +1,6 @@
 ﻿using FluentResults;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Policies.DTOs;
-using InsuranceApp.Domain.Enums;
 
 namespace InsuranceApp.Application.Policies;
 
@@ -12,4 +11,5 @@ public interface IPolicyService
 
     Task<Result<string>> CreatePolicyAsync(CreatePolicyRequest createPolicyDto, CancellationToken ct);
     Task<Result<string>> UpdatePolicyStatusAsync(string policyNumber, UpdatePolicyRequest updateDto, CancellationToken ct);
+    Task<Result<string>> DeletePolicyByIdAsync(string policyNumber, CancellationToken ct);
 }

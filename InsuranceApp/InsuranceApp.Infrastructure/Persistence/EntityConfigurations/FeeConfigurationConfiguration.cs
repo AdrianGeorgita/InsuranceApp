@@ -17,6 +17,7 @@ public class FeeConfigurationConfiguration : IEntityTypeConfiguration<FeeConfigu
             .HasDefaultValueSql(DbConstants.SysUtcDateTime);
         builder.Property(e => e.EffectiveFrom).HasPrecision(0);
         builder.Property(e => e.EffectiveTo).HasPrecision(0);
+        builder.Property(e => e.IsActive).HasDefaultValue(true);
         builder.Property(e => e.Name).HasMaxLength(256);
         builder.Property(e => e.Percentage).HasColumnType("decimal(10, 6)");
         builder.Property(e => e.Type).HasConversion<string>().HasMaxLength(128);

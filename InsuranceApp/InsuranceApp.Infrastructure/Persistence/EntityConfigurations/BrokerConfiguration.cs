@@ -12,6 +12,10 @@ public class BrokerConfiguration : IEntityTypeConfiguration<Broker>
     {
         builder.HasKey(e => e.Id).HasName("PK__Brokers__3214EC07BEE2B83E");
 
+        builder.HasQueryFilter(x => x.IsDeleted == false);
+
+        builder.HasIndex(e => e.Id, "IX_Brokers_Active").HasFilter("([IsDeleted]=(0))");
+
         builder.HasIndex(e => e.Code, "UQ_Brokers_Code").IsUnique();
 
         builder.HasIndex(e => e.Email, "UQ_Brokers_Email").IsUnique();

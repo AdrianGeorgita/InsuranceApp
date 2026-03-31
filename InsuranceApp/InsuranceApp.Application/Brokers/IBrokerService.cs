@@ -13,4 +13,5 @@ public interface IBrokerService
     Task<Result<Guid>> CreateBrokerAsync(CreateBrokerRequest createBrokerDto, CancellationToken ct);
     Task<Result<Guid>> UpdateBrokerAsync(Guid brokerId, UpdateBrokerRequest updateBrokerDto, CancellationToken ct);
     Task<Result<Guid>> UpdateBrokerStatusAsync(Guid brokerId, BrokerStatus newStatus, CancellationToken ct);
+    Task<Result<Guid>> DeleteBrokerAsync(Guid brokerId, CancellationToken ct);
 }

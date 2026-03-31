@@ -17,4 +17,5 @@ public sealed class PolicyProjection
     public DateTime EndDate { get; init; }
     public required string CurrencyCode { get; init; }
     public decimal FinalPremium { get; init; }
+    public bool IsDeleted { get; init; }
 }

@@ -16,6 +16,7 @@ public class RiskIndicatorConfiguration : IEntityTypeConfiguration<RiskIndicator
         builder.Property(e => e.CreatedAt)
             .HasPrecision(0)
             .HasDefaultValueSql(DbConstants.SysUtcDateTime);
+        builder.Property(e => e.IsActive).HasDefaultValue(true);
         builder.Property(e => e.Name).HasMaxLength(255);
         builder.Property(e => e.UpdatedAt)
             .HasPrecision(0)

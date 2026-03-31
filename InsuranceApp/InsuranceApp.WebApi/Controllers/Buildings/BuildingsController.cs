@@ -32,4 +32,16 @@ public class BuildingsController(IBuildingService buildingService) : BaseApiCont
         var result = await buildingService.UpdateBuildingAsync(buildingId, updateBuildingDto, ct);
         return FromResult(result);
     }
+
+    [HttpDelete("{buildingId:guid}", Name = "DeleteBuildingByIdAsync")]
+    [ProducesResponseType(typeof(Guid), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 404)]
+    [EndpointSummary("Delete a building")]
+    [EndpointDescription("Soft deletes a building using its unique identifier.")]
+    [UnitOfWork]
+    public async Task<ActionResult<Guid>> DeleteBuildingByIdAsync(Guid buildingId, CancellationToken ct)
+    {
+        var result = await buildingService.DeleteBuildingByIdAsync(buildingId, ct);
+        return FromResult(result);
+    }
 }

@@ -77,6 +77,18 @@ public class ClientService(IClientRepository clientRepository, IRequestValidator
         return Result.Ok(existingClient.Id);
     }
 
+    public async Task<Result<Guid>> DeleteClientByIdAsync(Guid clientId, CancellationToken ct)
+    {
+        var existingClient = await clientRepository.GetAsync(clientId, ct);
+        if (existingClient is null)
+            return Result.Fail<Guid>(new NotFoundError($"Client '{clientId}' not found."));
+
+        clientRepository.Remove(existingClient);
+        logger.LogInformation("Client with id '{ClientId}' has been deleted.", existingClient.Id);
+
+        return Result.Ok(existingClient.Id);
+    }
+
     private async Task LogIdentificationNumberChange(string oldIdentificationNumber, string newIdentificationNumber,
         Guid clientId, CancellationToken ct)
     {

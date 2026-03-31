@@ -60,6 +60,18 @@ public class BrokersController(IBrokerService brokerService) : BaseApiController
         return FromResult(result);
     }
 
+    [HttpDelete("{brokerId:guid}", Name = "DeleteBrokerByIdAsync")]
+    [ProducesResponseType(typeof(Guid), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 404)]
+    [EndpointSummary("Delete broker by Id")]
+    [EndpointDescription("Soft deletes a broker using its unique identifier.")]
+    [UnitOfWork]
+    public async Task<ActionResult<Guid>> DeleteBrokerByIdAsync(Guid brokerId, CancellationToken ct)
+    {
+        var result = await brokerService.DeleteBrokerAsync(brokerId, ct);
+        return FromResult(result);
+    }
+
     [HttpPost("{brokerId:guid}/activate", Name = "ActivateBrokerByIdAsync")]
     [ProducesResponseType(typeof(Guid), 201)]
     [ProducesResponseType(typeof(ProblemDetails), 404)]

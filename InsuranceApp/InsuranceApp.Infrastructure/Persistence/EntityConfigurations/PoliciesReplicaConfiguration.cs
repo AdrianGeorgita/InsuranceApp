@@ -10,6 +10,8 @@ public class PoliciesReplicaConfiguration : IEntityTypeConfiguration<PoliciesRep
     {
         builder.HasKey(e => e.PolicyNumber).HasName("PK__Policies__46DA01560019C4E9");
 
+        builder.HasIndex(e => e.PolicyNumber, "IX_PoliciesReplica_Active").HasFilter("([IsDeleted]=(0))");
+
         builder.ToTable("PoliciesReplica");
 
         builder.HasIndex(e => new { e.BrokerId, e.CurrencyCode, e.StartDate }, "IX_PoliciesReplica_Broker_Currency_StartDate");
