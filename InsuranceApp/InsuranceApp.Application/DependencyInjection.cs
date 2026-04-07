@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using InsuranceApp.Application.Audit.Cleanup;
 using InsuranceApp.Application.Brokers;
 using InsuranceApp.Application.Brokers.DTOs;
 using InsuranceApp.Application.Brokers.Validators;
@@ -67,6 +68,7 @@ internal static class DependencyInjection
         services.AddScoped<IPolicyService, PolicyService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IPolicyExpiryService, PolicyExpiryService>();
+        services.AddScoped<IAuditCleanupService, AuditCleanupService>();
 
         return services;
     }

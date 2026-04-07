@@ -62,6 +62,7 @@ internal static class DependencyInjection
         services.AddScoped<IFeeConfigurationRepository, FeeConfigurationRepository>();
         services.AddScoped<IPolicyRepository, PolicyRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IAuditRepository, AuditRepository>();
 
         return services;
     }
@@ -69,6 +70,7 @@ internal static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<PolicyExpiryJob, PolicyExpiryJob>();
+        services.AddScoped<AuditCleanupJob, AuditCleanupJob>();
         return services;
     }
 
