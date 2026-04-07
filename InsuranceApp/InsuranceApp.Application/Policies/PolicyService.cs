@@ -101,15 +101,15 @@ public class PolicyService(IPolicyRepository policyRepository, IPriceFetchServic
         string policyNumber, Guid brokerId, string? reason, CancellationToken ct)
     {
         var auditEventId = Guid.NewGuid();
-        var auditChangeEvent = new AuditTableChangeEvent
+        var auditChangeEvent = new PolicyChangedAuditEvent()
         {
             EventId = auditEventId,
-            UserId = brokerId,
-            TableName = "Policies",
+            OccurredAt = DateTime.UtcNow,
+            BrokerId = brokerId,
             ColumnName = "Status",
             OldValue = oldStatus.ToString(),
             NewValue = newStatus.ToString(),
-            RowId = policyNumber,
+            PolicyNumber = policyNumber,
             Reason = reason
         };
 

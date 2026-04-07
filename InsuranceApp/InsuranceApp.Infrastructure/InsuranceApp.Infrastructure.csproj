@@ -10,6 +10,7 @@
     <None Remove="Migrations\202602151900_CreatePoliciesReplica.sql" />
     <None Remove="Migrations\202602161149_SeedPoliciesReplica.sql" />
     <None Remove="Migrations\202603310932_AddSoftDeleteColumns.sql" />
+    <None Remove="Migrations\202604061035_SplitAuditIntoGenericAndPolicyAudits.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,11 +32,13 @@
     <EmbeddedResource Include="Migrations\202603310932_AddSoftDeleteColumns.sql">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604061035_SplitAuditIntoGenericAndPolicyAudits.sql" />
   </ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="dbup-core" Version="6.0.15" />
 	  <PackageReference Include="dbup-sqlserver" Version="6.0.16" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.25" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -47,6 +50,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.25" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -21,14 +21,13 @@ public class ClientServiceTests
     private readonly Mock<IClientRepository> _repository = new();
     private readonly Mock<IRequestValidator> _requestValidator = new();
     private readonly Mock<IMapper> _mapper = new();
-    private readonly Mock<IAuditEventPublisher> _auditEventPublisher = new();
     private readonly Mock<ILogger<ClientService>> _logger = new();
     private readonly IClientService _clientService;
 
     public ClientServiceTests()
     {
         _clientService = new ClientService(_repository.Object, _requestValidator.Object,
-            _mapper.Object, _auditEventPublisher.Object, _logger.Object);
+            _mapper.Object, _logger.Object);
     }
 
     [Fact]

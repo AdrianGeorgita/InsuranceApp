@@ -2,5 +2,5 @@
 
 public interface IAuditEventPublisher
 {
-    Task PublishAuditEventAsync(AuditTableChangeEvent auditEvent, CancellationToken ct);
+    Task PublishAuditEventAsync(IAuditEvent auditEvent, CancellationToken ct);
 }
