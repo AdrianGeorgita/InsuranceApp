@@ -1,6 +1,8 @@
-﻿namespace InsuranceApp.Domain.Entities;
+﻿using InsuranceApp.Domain.Common.Interfaces;
 
-public partial class Client
+namespace InsuranceApp.Domain.Entities;
+
+public partial class Client : IAuditable, ISoftDeletable
 {
     public Guid Id { get; set; }
 
@@ -16,11 +18,13 @@ public partial class Client
 
     public string? Address { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
-
     public virtual ICollection<Building> Buildings { get; set; } = new List<Building>();
 
     public virtual ICollection<Policy> Policies { get; set; } = new List<Policy>();
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }

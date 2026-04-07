@@ -1,11 +1,13 @@
-using System.Text.Json.Serialization;
-using System.Threading.RateLimiting;
 using DotNetEnv;
+using Hangfire;
 using InsuranceApp.Application;
 using InsuranceApp.Infrastructure;
 using InsuranceApp.WebApi.ExceptionHandling;
+using InsuranceApp.WebApi.Extensions;
 using InsuranceApp.WebApi.Filters;
 using Serilog;
+using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace InsuranceApp.WebApi;
 
@@ -38,7 +40,7 @@ public class Program
                 o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -73,13 +75,20 @@ public class Program
             );
         });
 
+        builder.Services.AddHangfire(config =>
+        {
+            config.UseSqlServerStorage(builder.Configuration.GetConnectionString("Default"));
+        });
+        builder.Services.AddHangfireServer();
+
         var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            app.UseHangfireDashboard();
         }
 
         app.UseSerilogRequestLogging();
@@ -93,6 +102,10 @@ public class Program
         app.UseRateLimiter();
 
         app.MapControllers();
+
+        app.AddBackgroundJobs();
+
+        app.MapHealthCheckEndpoints();
 
         await app.RunAsync();
     }

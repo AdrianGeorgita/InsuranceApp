@@ -49,11 +49,41 @@ jobs:
         APP_DB_USER: ${{ secrets.APP_DB_USER }}
         APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
       run: docker compose -f ./Docker/docker-compose.yaml up -d
-    - name: Test
+      
+    - name: Start API
+      env:
+        ASPNETCORE_URLS: http://localhost:8080
+        ASPNETCORE_ENVIRONMENT: CI
+        ConnectionStrings__Default: ${{ secrets.CONNECTIONSTRINGS__DEFAULT }}
+      run: |
+        dotnet run --project ./InsuranceApp.WebApi/InsuranceApp.WebApi.csproj --no-build --no-launch-profile -c Release > app.log 2>&1 &
+        echo $! > app.pid
+      working-directory: ./InsuranceApp
+      
+    - name: API readiness
+      run: |
+        for i in {1..30}; do
+          if curl -fsS http://localhost:8080/health/ready; then
+            echo "Application is ready"
+            exit 0
+          fi
+          echo "Waiting for app..."
+          sleep 2
+        done
+      
+        echo "App failed to start"
+        cat ./InsuranceApp/app.log
+        exit 1
+    - name: Run Integration Tests
       env:
         ConnectionStrings__Default: ${{ secrets.CONNECTIONSTRINGS__DEFAULT }}
       run: dotnet test ./InsuranceApp.IntegrationTests/InsuranceApp.IntegrationTests.csproj --no-build --verbosity normal -c Release 
       working-directory: ./InsuranceApp
+   
+    - name: Stop API
+      if: always()
+      run: kill $(cat ./InsuranceApp/app.pid) || true
+   
     - name: Stop Database Server
       if: always()
       run: docker compose -f ./Docker/docker-compose.yaml down -v

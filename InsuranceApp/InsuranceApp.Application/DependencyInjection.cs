@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using InsuranceApp.Application.Audit.Cleanup;
 using InsuranceApp.Application.Brokers;
 using InsuranceApp.Application.Brokers.DTOs;
 using InsuranceApp.Application.Brokers.Validators;
@@ -24,6 +25,7 @@ using InsuranceApp.Application.Metadata.RiskFactorConfigurations.DTOs;
 using InsuranceApp.Application.Metadata.RiskFactorConfigurations.Validators;
 using InsuranceApp.Application.Policies;
 using InsuranceApp.Application.Policies.DTOs;
+using InsuranceApp.Application.Policies.Expiry;
 using InsuranceApp.Application.Policies.Pricing;
 using InsuranceApp.Application.Policies.Validators;
 using InsuranceApp.Application.Reports;
@@ -65,6 +67,8 @@ internal static class DependencyInjection
         services.AddScoped<IPriceFetchService, PriceFetchService>();
         services.AddScoped<IPolicyService, PolicyService>();
         services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IPolicyExpiryService, PolicyExpiryService>();
+        services.AddScoped<IAuditCleanupService, AuditCleanupService>();
 
         return services;
     }

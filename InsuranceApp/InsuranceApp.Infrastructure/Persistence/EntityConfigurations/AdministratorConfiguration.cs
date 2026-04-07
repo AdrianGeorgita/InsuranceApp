@@ -11,6 +11,10 @@ public class AdministratorConfiguration : IEntityTypeConfiguration<Administrator
     {
         builder.HasKey(e => e.Id).HasName("PK__Administ__3214EC079F10394C");
 
+        builder.HasQueryFilter(x => x.IsDeleted == false);
+
+        builder.HasIndex(e => e.Id, "IX_Administrators_Active").HasFilter("([IsDeleted]=(0))");
+
         builder.HasIndex(e => e.Email, "UQ_Administrators_Email").IsUnique();
 
         builder.Property(e => e.Id).ValueGeneratedNever();

@@ -33,6 +33,18 @@ public class PoliciesController(IPolicyService policyService) : BaseApiControlle
         return FromResult(result);
     }
 
+    [HttpDelete("{policyNumber}", Name = "DeletePolicyByIdAsync")]
+    [ProducesResponseType(typeof(string), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 404)]
+    [EndpointSummary("Delete policy by Id")]
+    [EndpointDescription("Soft deletes a policy using its unique identifier.")]
+    [UnitOfWork]
+    public async Task<ActionResult<string>> DeletePolicyByIdAsync(string policyNumber, CancellationToken ct)
+    {
+        var result = await policyService.DeletePolicyByIdAsync(policyNumber, ct);
+        return FromResult(result);
+    }
+
     [HttpPost("", Name = "CreatePolicyAsync")]
     [ProducesResponseType(typeof(string), 201)]
     [ProducesResponseType(typeof(ProblemDetails), 400)]

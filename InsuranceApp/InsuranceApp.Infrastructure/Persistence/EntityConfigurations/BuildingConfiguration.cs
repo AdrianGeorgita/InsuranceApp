@@ -11,6 +11,10 @@ public class BuildingConfiguration : IEntityTypeConfiguration<Building>
     {
         builder.HasKey(e => e.Id).HasName("PK__Building__3214EC075A47808A");
 
+        builder.HasQueryFilter(x => x.IsDeleted == false);
+
+        builder.HasIndex(e => e.Id, "IX_Buildings_Active").HasFilter("([IsDeleted]=(0))");
+
         builder.Property(e => e.Id).ValueGeneratedNever();
         builder.Property(e => e.Address).HasMaxLength(255);
         builder.Property(e => e.BuildingType).HasMaxLength(50);

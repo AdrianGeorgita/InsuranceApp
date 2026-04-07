@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using InsuranceApp.Application.Clients.DTOs;
-using InsuranceApp.Application.Common.Audit;
 using InsuranceApp.Application.Common.Errors;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Common.Repository;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InsuranceApp.Application.Clients;
 public class ClientService(IClientRepository clientRepository, IRequestValidator requestValidator,
-    IMapper mapper, IAuditEventPublisher auditEventPublisher, ILogger<ClientService> logger) : IClientService
+    IMapper mapper, ILogger<ClientService> logger) : IClientService
 {
     public async Task<Result<PagedResult<ClientDto>>> ListAllClientsAsync(PageRequest pageRequest, ClientFilter? filter, CancellationToken ct)
     {
@@ -65,11 +64,6 @@ public class ClientService(IClientRepository clientRepository, IRequestValidator
 
         existingClient.UpdatedAt = DateTime.UtcNow;
 
-        if (updateClientDto?.IdentificationNumber is not null
-            && existingClient.IdentificationNumber != updateClientDto.IdentificationNumber)
-            await LogIdentificationNumberChange(existingClient.IdentificationNumber,
-                updateClientDto.IdentificationNumber, existingClient.Id, ct);
-
         existingClient.IdentificationNumber = updateClientDto?.IdentificationNumber ?? existingClient.IdentificationNumber;
 
         logger.LogInformation("Client with id '{ClientId}' has been updated.", existingClient.Id);
@@ -77,22 +71,16 @@ public class ClientService(IClientRepository clientRepository, IRequestValidator
         return Result.Ok(existingClient.Id);
     }
 
-    private async Task LogIdentificationNumberChange(string oldIdentificationNumber, string newIdentificationNumber,
-        Guid clientId, CancellationToken ct)
+    public async Task<Result<Guid>> DeleteClientByIdAsync(Guid clientId, CancellationToken ct)
     {
-        var auditEventId = Guid.NewGuid();
-        var auditChangeEvent = new AuditTableChangeEvent
-        {
-            EventId = auditEventId,
-            UserId = Guid.NewGuid(),
-            TableName = "Clients",
-            ColumnName = "IdentificationNumber",
-            OldValue = oldIdentificationNumber,
-            NewValue = newIdentificationNumber,
-            RowId = clientId.ToString()
-        };
+        var existingClient = await clientRepository.GetAsync(clientId, ct);
+        if (existingClient is null)
+            return Result.Fail<Guid>(new NotFoundError($"Client '{clientId}' not found."));
 
-        await auditEventPublisher.PublishAuditEventAsync(auditChangeEvent, ct);
+        clientRepository.Remove(existingClient);
+        logger.LogInformation("Client with id '{ClientId}' has been deleted.", existingClient.Id);
+
+        return Result.Ok(existingClient.Id);
     }
 
     private async Task<Result> EnsureValidRequestAndNoIdentifierConflictAsync<TRequest>(TRequest request, string? identificationNumber, CancellationToken ct)

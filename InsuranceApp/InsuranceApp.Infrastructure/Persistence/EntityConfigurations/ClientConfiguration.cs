@@ -11,6 +11,10 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
     {
         builder.HasKey(e => e.Id).HasName("PK__Clients__3214EC078E09FC27");
 
+        builder.HasQueryFilter(x => x.IsDeleted == false);
+
+        builder.HasIndex(e => e.Id, "IX_Clients_Active").HasFilter("([IsDeleted]=(0))");
+
         builder.HasIndex(e => e.IdentificationNumber, "UQ_Clients_IdentificationNumber").IsUnique();
 
         builder.Property(e => e.Id).ValueGeneratedNever();

@@ -4,6 +4,6 @@ namespace InsuranceApp.Infrastructure.Messaging.Auditing;
 
 public class AuditEventPublisher(IAuditEventQueue queue) : IAuditEventPublisher
 {
-    public async Task PublishAuditEventAsync(AuditTableChangeEvent auditEvent, CancellationToken ct) =>
+    public async Task PublishAuditEventAsync(IAuditEvent auditEvent, CancellationToken ct) =>
         await queue.EnqueueAsync(auditEvent, ct);
 }

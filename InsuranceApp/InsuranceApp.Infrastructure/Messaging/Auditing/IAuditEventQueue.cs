@@ -4,7 +4,7 @@ namespace InsuranceApp.Infrastructure.Messaging.Auditing;
 
 public interface IAuditEventQueue
 {
-    ValueTask EnqueueAsync(AuditTableChangeEvent auditEvent, CancellationToken ct);
+    ValueTask EnqueueAsync(IAuditEvent auditEvent, CancellationToken ct);
 
-    ValueTask<AuditTableChangeEvent?> DequeueAsync(TimeSpan? timeout = null, CancellationToken ct = default);
+    ValueTask<IAuditEvent?> DequeueAsync(TimeSpan? timeout = null, CancellationToken ct = default);
 }
