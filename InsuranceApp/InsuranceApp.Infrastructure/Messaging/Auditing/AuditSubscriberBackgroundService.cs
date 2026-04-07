@@ -35,16 +35,35 @@ public class AuditSubscriberBackgroundService(IAuditEventQueue queue, IServiceSc
         }
     }
 
-    private async Task ProcessEventAsync(AuditTableChangeEvent auditEvent, CancellationToken ct)
+    private Task ProcessEventAsync(IAuditEvent auditEvent, CancellationToken ct) =>
+        auditEvent switch
+        {
+            PolicyChangedAuditEvent policyChanged => SavePolicyChangedAuditEvent(policyChanged, ct),
+            AuditEvent audit => SaveAuditEvent(audit, ct),
+            _ => Task.CompletedTask
+        };
+
+    private async Task SavePolicyChangedAuditEvent(PolicyChangedAuditEvent auditEvent, CancellationToken ct)
     {
         using var scope = scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<InsuranceAppContext>();
 
-        var auditEntry = mapper.Map<AuditTableValueChange>(auditEvent);
+        var auditEntry = mapper.Map<PolicyAuditLog>(auditEvent);
         auditEntry.Id = Guid.NewGuid();
-        auditEntry.UpdatedAt = DateTime.UtcNow;
 
-        await db.AuditTableValueChanges.AddAsync(auditEntry, ct);
+        await db.PolicyAuditLogs.AddAsync(auditEntry, ct);
+        await db.SaveChangesAsync(ct);
+    }
+
+    private async Task SaveAuditEvent(AuditEvent auditEvent, CancellationToken ct)
+    {
+        using var scope = scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<InsuranceAppContext>();
+
+        var auditEntry = mapper.Map<AuditLog>(auditEvent);
+        auditEntry.Id = Guid.NewGuid();
+
+        await db.AuditLogs.AddAsync(auditEntry, ct);
         await db.SaveChangesAsync(ct);
     }
 }

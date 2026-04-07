@@ -30,7 +30,8 @@ public class InsuranceMapper : Profile
             .ForMember(b => b.Country, opt =>
                 opt.MapFrom(s => s.City.County.Country.Name));
         CreateMap<CreateBuildingRequest, Building>();
-        CreateMap<AuditTableChangeEvent, AuditTableValueChange>();
+        CreateMap<PolicyChangedAuditEvent, PolicyAuditLog>();
+        CreateMap<AuditEvent, AuditLog>();
         CreateMap<Broker, BrokerDto>().ReverseMap();
         CreateMap<CreateBrokerRequest, Broker>();
         CreateMap<UpdateBrokerRequest, Broker>();

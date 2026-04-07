@@ -19,7 +19,7 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
 
     public virtual DbSet<Administrator> Administrators { get; set; }
 
-    public virtual DbSet<AuditTableValueChange> AuditTableValueChanges { get; set; }
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
 
     public virtual DbSet<Broker> Brokers { get; set; }
 
@@ -40,6 +40,8 @@ public partial class InsuranceAppContext : DbContext, IUnitOfWork
     public virtual DbSet<Policy> Policies { get; set; }
 
     public virtual DbSet<PoliciesReplica> PoliciesReplicas { get; set; }
+
+    public virtual DbSet<PolicyAuditLog> PolicyAuditLogs { get; set; }
 
     public virtual DbSet<RiskFactorConfiguration> RiskFactorConfigurations { get; set; }
 

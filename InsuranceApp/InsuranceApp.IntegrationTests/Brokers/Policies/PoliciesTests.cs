@@ -60,8 +60,8 @@ public class PoliciesTests : IntegrationTestBase
             BuildingId = buildingId,
             ClientId = clientId,
             CurrencyCode = "RON",
-            StartDate = "2026-04-01",
-            EndDate = "2027-04-01"
+            StartDate = DateTime.UtcNow.AddDays(5).ToString("yyyy-MM-dd"),
+            EndDate = DateTime.UtcNow.AddDays(5).AddYears(1).ToString("yyyy-MM-dd")
         };
 
         var createPolicyResponse =
@@ -108,8 +108,6 @@ public class PoliciesTests : IntegrationTestBase
             BrokerId = new Guid("c8b9d0e1-9999-4999-8999-999999999999"),
             Status = PolicyStatus.Draft,
             CurrencyCode = "RON",
-            StartDate = new DateTime(2026, 04, 01, 0, 0, 0, DateTimeKind.Utc),
-            EndDate = new DateTime(2027, 04, 01, 0, 0, 0, DateTimeKind.Utc),
             BasePremium = 50000.0000M,
             FinalPremium = 99750.0000M,
         });
@@ -145,8 +143,8 @@ public class PoliciesTests : IntegrationTestBase
             BuildingId = Guid.NewGuid(),
             ClientId = "4b04d5f2-3c0a-4b1e-9a3d-a1f7c2d3e011",
             CurrencyCode = "RON",
-            StartDate = new DateTime(2026, 04, 02, 0, 0, 0, DateTimeKind.Utc),
-            EndDate = new DateTime(2026, 04, 01, 0, 0, 0, DateTimeKind.Utc)
+            StartDate = DateTime.UtcNow.AddDays(5).ToString("yyyy-MM-dd"),
+            EndDate = DateTime.UtcNow.AddDays(4).ToString("yyyy-MM-dd")
         };
 
         var createPolicyResponse =

@@ -8,6 +8,7 @@ using InsuranceApp.Infrastructure.Messaging.Auditing;
 using InsuranceApp.Infrastructure.Messaging.Reporting;
 using InsuranceApp.Infrastructure.Persistence;
 using InsuranceApp.Infrastructure.Persistence.Interceptors;
+using InsuranceApp.Infrastructure.Persistence.Options;
 using InsuranceApp.Infrastructure.Persistence.Repository;
 using InsuranceApp.Infrastructure.Persistence.Repository.Reports;
 using InsuranceApp.Infrastructure.Persistence.Repository.Reports.Strategies;
@@ -23,11 +24,13 @@ internal static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.RegisterConfigurations(configuration);
         services.RegisterDbContextInterceptors();
         services.AddDbContext<InsuranceAppContext>((sp, options) =>
         {
             options.UseSqlServer(configuration.GetConnectionString("Default"));
             options.AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>());
+            options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
         });
 
         services.AddScoped<DbContext>(sp => sp.GetRequiredService<InsuranceAppContext>());
@@ -59,6 +62,7 @@ internal static class DependencyInjection
         services.AddScoped<IFeeConfigurationRepository, FeeConfigurationRepository>();
         services.AddScoped<IPolicyRepository, PolicyRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<IAuditRepository, AuditRepository>();
 
         return services;
     }
@@ -66,6 +70,7 @@ internal static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<PolicyExpiryJob, PolicyExpiryJob>();
+        services.AddScoped<AuditCleanupJob, AuditCleanupJob>();
         return services;
     }
 
@@ -109,6 +114,16 @@ internal static class DependencyInjection
     private static IServiceCollection RegisterDbContextInterceptors(this IServiceCollection services)
     {
         services.AddScoped<SoftDeleteInterceptor, SoftDeleteInterceptor>();
+        services.AddScoped<AuditInterceptor, AuditInterceptor>();
+
+        return services;
+    }
+
+    private static IServiceCollection RegisterConfigurations(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<AuditOptions>(
+            configuration.GetSection("Audit")
+        );
 
         return services;
     }
