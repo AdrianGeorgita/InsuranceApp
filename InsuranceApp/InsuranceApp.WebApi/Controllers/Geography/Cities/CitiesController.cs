@@ -1,10 +1,13 @@
-﻿using InsuranceApp.Application.Geography.Cities;
+﻿using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Geography.Cities;
 using InsuranceApp.Application.Geography.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Geography.Cities;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Broker)]
 [Route("api/brokers/[controller]")]
 public class CitiesController(ICityService cityService) : BaseApiController
 {

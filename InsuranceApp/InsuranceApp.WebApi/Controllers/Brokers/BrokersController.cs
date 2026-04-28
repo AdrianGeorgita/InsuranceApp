@@ -1,13 +1,16 @@
 ﻿using InsuranceApp.Application.Brokers;
 using InsuranceApp.Application.Brokers.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Domain.Enums;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Brokers;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Admin)]
 [Route("api/admin/[controller]")]
 public class BrokersController(IBrokerService brokerService) : BaseApiController
 {

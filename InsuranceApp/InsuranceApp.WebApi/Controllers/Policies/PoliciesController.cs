@@ -1,13 +1,16 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Policies;
 using InsuranceApp.Application.Policies.DTOs;
 using InsuranceApp.Domain.Enums;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Policies;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Broker)]
 [Route("api/brokers/[controller]")]
 public class PoliciesController(IPolicyService policyService) : BaseApiController
 {
