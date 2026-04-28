@@ -1,11 +1,14 @@
 ﻿using InsuranceApp.Application.Buildings;
 using InsuranceApp.Application.Buildings.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Buildings;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Broker)]
 [Route("api/brokers/[controller]")]
 public class BuildingsController(IBuildingService buildingService) : BaseApiController
 {

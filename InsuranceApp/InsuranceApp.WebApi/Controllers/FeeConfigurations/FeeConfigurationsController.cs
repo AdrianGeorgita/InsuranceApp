@@ -1,12 +1,15 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.FeeConfigurations;
 using InsuranceApp.Application.Metadata.FeeConfigurations.DTOs;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.FeeConfigurations;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Admin)]
 [Route("api/admin/fees")]
 public class FeeConfigurationsController(IFeeConfigurationService feeConfigurationService) : BaseApiController
 {

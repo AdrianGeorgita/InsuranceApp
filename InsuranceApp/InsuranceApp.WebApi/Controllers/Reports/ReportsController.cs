@@ -1,12 +1,15 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Reports;
 using InsuranceApp.Application.Reports.DTOs;
 using InsuranceApp.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Reports;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Admin)]
 [Route("api/admin/[controller]")]
 public class ReportsController(IReportService reportService) : BaseApiController
 {

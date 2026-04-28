@@ -2,13 +2,16 @@
 using InsuranceApp.Application.Clients;
 using InsuranceApp.Application.Clients.Buildings;
 using InsuranceApp.Application.Clients.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Clients;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Broker)]
 [Route("api/brokers/[controller]")]
 public class ClientsController(IClientService clientService, IClientBuildingService clientBuildingService) : BaseApiController
 {

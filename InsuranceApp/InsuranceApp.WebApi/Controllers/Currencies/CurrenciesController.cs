@@ -1,12 +1,15 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.Currencies;
 using InsuranceApp.Application.Metadata.Currencies.DTOs;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Currencies;
 
 [ApiController]
+[Authorize(Roles = AppRoles.Admin)]
 [Route("api/admin/[controller]")]
 public class CurrenciesController(ICurrencyService currencyService) : BaseApiController
 {

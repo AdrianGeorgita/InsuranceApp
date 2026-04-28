@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using InsuranceApp.Application.Clients.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -13,6 +15,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenNoFilter_ShouldReturnPagedListOfClients()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
@@ -61,6 +64,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfClients()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 10,
@@ -87,6 +91,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenInvalidPageRequest_ShouldReturnBadRequest()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 160,
@@ -110,6 +115,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenFilter_ShouldReturnPagedFilteredListOfClients()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
@@ -163,6 +169,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task GetClientByIdAsync_GivenValidClientId_ShouldReturnClient()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var clientId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f006");
 
         var clientResponse = await HttpClient.GetAsync($"/api/brokers/clients/{clientId}");
@@ -188,6 +195,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task GetClientByIdAsync_GivenNonExistingClientId_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var clientId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f009");
         var api = $"/api/brokers/clients/{clientId}";
 
@@ -208,6 +216,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task CreateClient_GivenValidRequest_ShouldAddClientToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createClientRequest = new
         {
             Type = "Individual",

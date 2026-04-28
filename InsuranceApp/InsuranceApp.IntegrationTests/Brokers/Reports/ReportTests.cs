@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Reports.DTOs;
 using InsuranceApp.Domain.Enums;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
@@ -15,6 +17,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenCountryGroupingAndOnlyDateRangeFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Country;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -49,6 +52,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenBrokerGroupingAndOnlyDateRangeFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -83,6 +87,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenCountyGroupingAndOnlyDateRangeFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.County;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -117,6 +122,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenCityGroupingAndOnlyDateRangeFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.City;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -151,6 +157,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Country;
         var pageRequest = GetValidPageRequest();
         pageRequest.PageSize = 10;
@@ -169,6 +176,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenBrokerGroupingWithCurrencyFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -204,6 +212,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenBrokerGroupingWithStatusFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -239,6 +248,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenBrokerGroupingWithBuildingTypeFilter_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -274,6 +284,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenBrokerGroupingWithAllFilters_ShouldReturnPagedListOfReports()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -303,6 +314,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_ThenCreatePolicyForBroker_ThenListReportsAgain_ShouldReturnPagedListOfReportsWithNewlyAddedPolicy()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();
@@ -334,6 +346,7 @@ public class ReportTests : IntegrationTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         await AssertBodyContainsItems(response, pageRequest, returnedItems, totalCount);
 
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         await CreateAndAssertPolicy(returnedItems[0].GroupingKey);
         const decimal expectedFinalPremium = 63125M;
         await Task.Delay(1000);
@@ -342,6 +355,7 @@ public class ReportTests : IntegrationTestBase
         returnedItems[0].TotalFinalPremium += expectedFinalPremium;
         returnedItems[0].TotalFinalPremiumInBaseCurrency += expectedFinalPremium;
 
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         response = await HttpClient.GetAsync(api);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -351,6 +365,7 @@ public class ReportTests : IntegrationTestBase
     [Fact]
     public async Task ListAllReportsAsync_GivenBrokerGroupingWithInvalidFilters_ShouldReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const ReportGroup groupingBy = ReportGroup.Broker;
         var pageRequest = GetValidPageRequest();
         var filter = GetValidFilter();

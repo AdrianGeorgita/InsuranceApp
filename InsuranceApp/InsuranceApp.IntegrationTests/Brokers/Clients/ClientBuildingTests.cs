@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using InsuranceApp.Application.Buildings.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -13,6 +15,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientBuildingsAsync_GivenExistingClientId_ShouldReturnPagedListOfBuildings()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
@@ -81,6 +84,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientBuildingsAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfBuildings()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 10,
@@ -109,6 +113,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientBuildingsAsync_GivenInvalidPageRequest_ShouldReturnBadRequest()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 160,
@@ -134,6 +139,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task CreateClient_ThenRegisterBuilding_ShouldAddClientAndBuildingToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createClientRequest = new
         {
             Type = "Individual",
