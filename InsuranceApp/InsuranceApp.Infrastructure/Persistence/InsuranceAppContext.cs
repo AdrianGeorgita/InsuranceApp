@@ -2,7 +2,6 @@
 using InsuranceApp.Domain.Entities;
 using InsuranceApp.Infrastructure.Persistence.Identity;
 using InsuranceApp.Infrastructure.Persistence.Internal;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

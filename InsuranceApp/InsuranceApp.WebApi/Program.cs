@@ -42,7 +42,7 @@ public class Program
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.ConfigureSwaggerGen();
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
@@ -54,7 +54,7 @@ public class Program
         {
             configuration.ReadFrom.Configuration(context.Configuration)
                 .ReadFrom.Services(services)
-                .Enrich.FromLogContext();
+                .Enrich.FromLogContext();   
         });
 
         builder.Services.AddRouting(o => o.LowercaseUrls = true);
@@ -97,6 +97,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseRateLimiter();

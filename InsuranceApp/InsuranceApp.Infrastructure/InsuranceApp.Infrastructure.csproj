@@ -11,6 +11,8 @@
     <None Remove="Migrations\202602161149_SeedPoliciesReplica.sql" />
     <None Remove="Migrations\202603310932_AddSoftDeleteColumns.sql" />
     <None Remove="Migrations\202604061035_SplitAuditIntoGenericAndPolicyAudits.sql" />
+    <None Remove="Migrations\202604201229_AddIdentityTables.sql" />
+    <None Remove="Migrations\202604201345_SeedUsers.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,11 +35,15 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202604061035_SplitAuditIntoGenericAndPolicyAudits.sql" />
+    <EmbeddedResource Include="Migrations\202604201229_AddIdentityTables.sql" />
+    <EmbeddedResource Include="Migrations\202604201345_SeedUsers.sql" />
   </ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="dbup-core" Version="6.0.15" />
 	  <PackageReference Include="dbup-sqlserver" Version="6.0.16" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.25" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.25" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>

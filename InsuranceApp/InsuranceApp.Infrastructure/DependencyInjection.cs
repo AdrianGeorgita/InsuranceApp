@@ -1,4 +1,6 @@
-﻿using InsuranceApp.Application.Common.Audit;
+﻿using System.Text;
+using InsuranceApp.Application.Auth;
+using InsuranceApp.Application.Common.Audit;
 using InsuranceApp.Application.Common.Messaging;
 using InsuranceApp.Application.Common.Persistence;
 using InsuranceApp.Application.Common.Repository;
@@ -7,15 +9,18 @@ using InsuranceApp.Infrastructure.Jobs;
 using InsuranceApp.Infrastructure.Messaging.Auditing;
 using InsuranceApp.Infrastructure.Messaging.Reporting;
 using InsuranceApp.Infrastructure.Persistence;
+using InsuranceApp.Infrastructure.Persistence.Identity;
 using InsuranceApp.Infrastructure.Persistence.Interceptors;
 using InsuranceApp.Infrastructure.Persistence.Options;
 using InsuranceApp.Infrastructure.Persistence.Repository;
 using InsuranceApp.Infrastructure.Persistence.Repository.Reports;
 using InsuranceApp.Infrastructure.Persistence.Repository.Reports.Strategies;
 using InsuranceApp.Infrastructure.Validation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace InsuranceApp.Infrastructure;
 
@@ -37,6 +42,8 @@ internal static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<InsuranceAppContext>());
 
         services.RegisterHealthChecks();
+
+        services.RegisterAuthentication(configuration);
 
         services.AddScoped<IRequestValidator, RequestValidator>();
 
@@ -71,6 +78,8 @@ internal static class DependencyInjection
     {
         services.AddScoped<PolicyExpiryJob, PolicyExpiryJob>();
         services.AddScoped<AuditCleanupJob, AuditCleanupJob>();
+
+        services.AddScoped<IIdentityService, IdentityService>();
         return services;
     }
 
@@ -124,6 +133,39 @@ internal static class DependencyInjection
         services.Configure<AuditOptions>(
             configuration.GetSection("Audit")
         );
+
+        services.Configure<JwtOptions>(
+            configuration.GetSection("JwtSettings")
+        );
+
+        return services;
+    }
+
+    private static IServiceCollection RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddIdentityCore<User>()
+            .AddRoles<Role>()
+            .AddEntityFrameworkStores<InsuranceAppContext>();
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidIssuer = configuration["JwtSettings:Issuer"],
+                ValidAudience = configuration["JwtSettings:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!))
+            };
+        });
 
         return services;
     }

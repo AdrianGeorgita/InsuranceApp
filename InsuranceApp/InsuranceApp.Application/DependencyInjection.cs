@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
 using InsuranceApp.Application.Audit.Cleanup;
+using InsuranceApp.Application.Auth;
+using InsuranceApp.Application.Auth.DTOs;
+using InsuranceApp.Application.Auth.Validators;
 using InsuranceApp.Application.Brokers;
 using InsuranceApp.Application.Brokers.DTOs;
 using InsuranceApp.Application.Brokers.Validators;
@@ -69,6 +72,7 @@ internal static class DependencyInjection
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IPolicyExpiryService, PolicyExpiryService>();
         services.AddScoped<IAuditCleanupService, AuditCleanupService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
@@ -90,6 +94,8 @@ internal static class DependencyInjection
         services.AddScoped<IValidator<CreatePolicyRequest>, CreatePolicyValidator>();
         services.AddScoped<IValidator<UpdatePolicyRequest>, UpdatePolicyValidator>();
         services.AddScoped<IValidator<ReportFilter>, ReportFilterValidator>();
+        services.AddScoped<IValidator<RegisterRequest>, RegisterValidator>();
+        services.AddScoped<IValidator<LoginRequest>, LoginValidator>();
 
         return services;
     }
