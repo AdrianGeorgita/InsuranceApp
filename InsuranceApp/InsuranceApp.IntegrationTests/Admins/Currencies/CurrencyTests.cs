@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.Currencies.DTOs;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -13,6 +15,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task ListAllCurrenciesAsync_ShouldReturnPagedListOfCurrencies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var pageRequest = new
         {
             PageSize = 2,
@@ -57,6 +60,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task GetCurrencyByCodeAsync_GivenValidCurrencyCode_ShouldReturnCurrency()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "RON";
 
         var response = await HttpClient.GetAsync($"/api/admin/currencies/{currencyCode}");
@@ -79,6 +83,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task GetCurrencyByCodeAsync_GivenNonExistingCurrencyCode_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "XYZ";
         var api = $"/api/admin/currencies/{currencyCode}";
 
@@ -99,6 +104,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task CreateCurrency_GivenValidRequest_ShouldAddCurrencyToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var createCurrencyRequest = new CreateCurrencyRequest()
         {
             Code = "RBX",
@@ -137,6 +143,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task CreateCurrency_ThenUpdateCurrency_ShouldUpdateCurrencyInDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var createCurrencyRequest = new CreateCurrencyRequest()
         {
             Code = "RBX",
@@ -185,6 +192,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task UpdateCurrency_SetInactive_ThenCreatePolicy_ShouldSetAsDeprecatedAndReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "HUF";
         var updateCurrencyRequest = new
         {
@@ -214,6 +222,7 @@ public class CurrencyTests : IntegrationTestBase
             Deprecated = true
         });
 
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createPolicyRequest = new
         {
             BrokerId = "c8b9d0e1-9999-4999-8999-999999999999",
@@ -242,6 +251,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task UpdateCurrency_SetInactive_GivenUnusedCurrency_ShouldSetAsInactive()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "BGN";
         var updateCurrencyRequest = new
         {

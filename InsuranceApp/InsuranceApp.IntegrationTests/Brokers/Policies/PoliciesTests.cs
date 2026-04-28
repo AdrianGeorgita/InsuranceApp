@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Policies.DTOs;
 using InsuranceApp.Domain.Enums;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -14,6 +16,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CreateClient_ThenRegisterBuilding_ThenCreatePolicy_ThenActivatePolicy_ShouldAddClientAndBuildingAndPolicyToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createClientRequest = new
         {
             Type = "Individual",
@@ -136,6 +139,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CreatePolicy_GivenInvalidRequest_ShouldNotCreatePolicyAndReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createPolicyRequest = new
         {
             BrokerId = "c8b9d0e1-9999-4999-8999-999999999999",
@@ -168,6 +172,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ListAllPoliciesAsync_GivenNoFilter_ShouldReturnPagedListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
@@ -222,6 +227,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ListAllPoliciesAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 10,
@@ -248,6 +254,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ListAllPoliciesAsync_GivenFilter_ShouldReturnPagedFilteredListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 1,
@@ -296,6 +303,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task GetPolicyByIdAsync_GivenValidPolicyNumber_ShouldReturnDetailedPolicy()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00001";
 
         var response = await HttpClient.GetAsync($"/api/brokers/policies/{policyNumber}");
@@ -342,6 +350,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task GetPolicyByIdAsync_GivenNonExistingPolicyNumber_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POLICY-f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f009";
         var api = $"/api/brokers/policies/{policyNumber}";
 
@@ -362,6 +371,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CancelPolicyByIdAsync_GivenValidActivePolicy_ShouldCancelPolicy()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00003";
 
         var cancelPolicyResponse =
@@ -390,6 +400,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CancelPolicyByIdAsync_GivenCancelledPolicy_ShouldReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00022";
 
         var cancelPolicyResponse =
@@ -409,6 +420,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ActivatePolicyByIdAsync_GivenExpiredPolicy_ShouldReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00011";
 
         var activatePolicyResponse =
