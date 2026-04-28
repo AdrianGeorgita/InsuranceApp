@@ -45,6 +45,8 @@ internal static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddScoped<RequestContext>();
+
         services.AddMappers();
         services.AddValidators();
         services.AddStrategies();

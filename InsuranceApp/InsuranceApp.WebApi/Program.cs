@@ -8,6 +8,7 @@ using InsuranceApp.WebApi.Filters;
 using Serilog;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using InsuranceApp.WebApi.Middleware;
 
 namespace InsuranceApp.WebApi;
 
@@ -98,6 +99,7 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAuthentication();
+        app.UseMiddleware<RequestContextMiddleware>();
         app.UseAuthorization();
 
         app.UseRateLimiter();

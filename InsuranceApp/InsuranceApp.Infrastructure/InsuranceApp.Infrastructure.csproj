@@ -13,6 +13,7 @@
     <None Remove="Migrations\202604061035_SplitAuditIntoGenericAndPolicyAudits.sql" />
     <None Remove="Migrations\202604201229_AddIdentityTables.sql" />
     <None Remove="Migrations\202604201345_SeedUsers.sql" />
+    <None Remove="Migrations\202604281604_UpdateAuditLog_MakeUserIdNullable.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +38,7 @@
     <EmbeddedResource Include="Migrations\202604061035_SplitAuditIntoGenericAndPolicyAudits.sql" />
     <EmbeddedResource Include="Migrations\202604201229_AddIdentityTables.sql" />
     <EmbeddedResource Include="Migrations\202604201345_SeedUsers.sql" />
+    <EmbeddedResource Include="Migrations\202604281604_UpdateAuditLog_MakeUserIdNullable.sql" />
   </ItemGroup>
 
   <ItemGroup>
