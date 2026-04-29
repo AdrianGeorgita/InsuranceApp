@@ -1,4 +1,5 @@
-﻿using InsuranceApp.Application.Buildings.DTOs;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Buildings.DTOs;
 using InsuranceApp.Application.Clients;
 using InsuranceApp.Application.Clients.Buildings;
 using InsuranceApp.Application.Clients.DTOs;
@@ -12,7 +13,8 @@ namespace InsuranceApp.WebApi.Controllers.Clients;
 
 [ApiController]
 [Authorize(Roles = AppRoles.Broker)]
-[Route("api/brokers/[controller]")]
+[Route("api/v{version:apiVersion}/brokers/[controller]")]
+[ApiVersion("1.0")]
 public class ClientsController(IClientService clientService, IClientBuildingService clientBuildingService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllClientsAsync")]

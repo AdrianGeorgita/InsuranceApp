@@ -1,4 +1,5 @@
-﻿using InsuranceApp.Application.Common.Constants;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Geography.Cities;
 using InsuranceApp.Application.Geography.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,8 @@ namespace InsuranceApp.WebApi.Controllers.Geography.Cities;
 
 [ApiController]
 [Authorize(Roles = AppRoles.Broker)]
-[Route("api/brokers/[controller]")]
+[Route("api/v{version:apiVersion}/brokers/[controller]")]
+[ApiVersion("1.0")]
 public class CitiesController(ICityService cityService) : BaseApiController
 {
     [HttpGet("{cityId:guid}", Name = "GetCityByIdAsync")]
