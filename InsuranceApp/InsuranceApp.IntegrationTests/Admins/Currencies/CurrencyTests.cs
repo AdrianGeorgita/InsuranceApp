@@ -22,7 +22,7 @@ public class CurrencyTests : IntegrationTestBase
             PageNumber = 1,
         };
 
-        var api = $"/api/admin/currencies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/admin/currencies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -63,7 +63,8 @@ public class CurrencyTests : IntegrationTestBase
         HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "RON";
 
-        var response = await HttpClient.GetAsync($"/api/admin/currencies/{currencyCode}");
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
+        var response = await HttpClient.GetAsync(api);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -85,7 +86,7 @@ public class CurrencyTests : IntegrationTestBase
     {
         HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "XYZ";
-        var api = $"/api/admin/currencies/{currencyCode}";
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -113,7 +114,8 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = true
         };
 
-        var createCurrencyResponse = await HttpClient.PostAsJsonAsync("/api/admin/currencies", createCurrencyRequest);
+        var api = ApiV1("/admin/currencies");
+        var createCurrencyResponse = await HttpClient.PostAsJsonAsync(api, createCurrencyRequest);
         var currencyCode = await createCurrencyResponse.Content.ReadAsStringAsync();
 
         createCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -152,7 +154,8 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = true
         };
 
-        var createCurrencyResponse = await HttpClient.PostAsJsonAsync("/api/admin/currencies", createCurrencyRequest);
+        var api = ApiV1("/admin/currencies");
+        var createCurrencyResponse = await HttpClient.PostAsJsonAsync(api, createCurrencyRequest);
         var currencyCode = await createCurrencyResponse.Content.ReadAsStringAsync();
 
         createCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -165,14 +168,16 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = false,
         };
 
-        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/currencies/{currencyCode}", updateCurrencyRequest);
+        api = ApiV1($"/admin/currencies/{currencyCode}");
+        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync(api, updateCurrencyRequest);
         var updatedCurrencyCode = await updateCurrencyResponse.Content.ReadAsStringAsync();
 
         updateCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedCurrencyCode.Should().NotBeEmpty();
         updatedCurrencyCode.Should().Be("RBX");
 
-        var getCurrencyResponse = await HttpClient.GetAsync($"/api/admin/currencies/{updatedCurrencyCode}");
+        api = ApiV1($"/admin/currencies/{updatedCurrencyCode}");
+        var getCurrencyResponse = await HttpClient.GetAsync(api);
         var json = await getCurrencyResponse.Content.ReadAsStringAsync();
 
         getCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -199,14 +204,16 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = false,
         };
 
-        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/currencies/{currencyCode}", updateCurrencyRequest);
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
+        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync(api, updateCurrencyRequest);
         var updatedCurrencyCode = await updateCurrencyResponse.Content.ReadAsStringAsync();
 
         updateCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedCurrencyCode.Should().NotBeEmpty();
         updatedCurrencyCode.Should().Be(currencyCode);
 
-        var getCurrencyResponse = await HttpClient.GetAsync($"/api/admin/currencies/{updatedCurrencyCode}");
+        api = ApiV1($"/admin/currencies/{updatedCurrencyCode}");
+        var getCurrencyResponse = await HttpClient.GetAsync(api);
         var json = await getCurrencyResponse.Content.ReadAsStringAsync();
 
         getCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -234,8 +241,9 @@ public class CurrencyTests : IntegrationTestBase
             EndDate = new DateTime(2027, 04, 02, 0, 0, 0, DateTimeKind.Utc)
         };
 
+        api = ApiV1($"/brokers/policies");
         var createPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies", createPolicyRequest);
+            await HttpClient.PostAsJsonAsync(api, createPolicyRequest);
         var policyNumber = await createPolicyResponse.Content.ReadAsStringAsync();
         var bodyJson = await createPolicyResponse.Content.ReadAsStringAsync();
         var body = JsonConvert.DeserializeObject<ValidationProblemDetails>(bodyJson);
@@ -258,14 +266,16 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = false,
         };
 
-        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/currencies/{currencyCode}", updateCurrencyRequest);
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
+        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync(api, updateCurrencyRequest);
         var updatedCurrencyCode = await updateCurrencyResponse.Content.ReadAsStringAsync();
 
         updateCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedCurrencyCode.Should().NotBeEmpty();
         updatedCurrencyCode.Should().Be(currencyCode);
 
-        var getCurrencyResponse = await HttpClient.GetAsync($"/api/admin/currencies/{updatedCurrencyCode}");
+        api = ApiV1($"/admin/currencies/{updatedCurrencyCode}");
+        var getCurrencyResponse = await HttpClient.GetAsync(api);
         var json = await getCurrencyResponse.Content.ReadAsStringAsync();
 
         getCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);

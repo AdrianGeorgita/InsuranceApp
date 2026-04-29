@@ -12,7 +12,7 @@ public class RateLimiterTests : IntegrationTestBase
         HttpClient.AuthenticateAs(AppRoles.Admin);
         const int requestsToSend = 150;
         const int requestsLimit = 100;
-        const string apiUrl = "http://localhost:5285/api/admin/fees";
+        const string apiUrl = "http://localhost:5285/api/v1/admin/fees";
 
         var failedRequests = 0;
         await Parallel.ForAsync(0, requestsToSend, async (_, _) =>
@@ -33,7 +33,7 @@ public class RateLimiterTests : IntegrationTestBase
         HttpClient.AuthenticateAs(AppRoles.Admin);
         const int requestsLimit = 100;
         const int batchesToSend = 2;
-        const string apiUrl = "http://localhost:5285/api/admin/fees";
+        const string apiUrl = "http://localhost:5285/api/v1/admin/fees";
 
         var failedRequests = 0;
         for (var i = 0; i < batchesToSend; i++)
@@ -59,7 +59,7 @@ public class RateLimiterTests : IntegrationTestBase
     {
         HttpClient.AuthenticateAs(AppRoles.Admin);
         const int requestsToSend = 50;
-        const string apiUrl = "http://localhost:5285/api/admin/fees";
+        const string apiUrl = "http://localhost:5285/api/v1/admin/fees";
 
         var failedRequests = 0;
         await Parallel.ForAsync(0, requestsToSend, async (_, _) =>

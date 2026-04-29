@@ -5,6 +5,7 @@ public class IntegrationTestBase : IAsyncLifetime
     protected HttpClient HttpClient { get; set; } = null!;
     protected SqlServerTestDb Db { get; set; } = null!;
 
+    protected static string ApiV1(string path) => $"/api/v1/{path.TrimStart('/')}";
     public async Task InitializeAsync()
     {
         Db = new SqlServerTestDb();

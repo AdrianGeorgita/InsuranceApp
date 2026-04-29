@@ -21,7 +21,7 @@ public class BuildingTests : IntegrationTestBase
             InsuredValue = 5000000
         };
 
-        var api = $"/api/brokers/buildings/{buildingId}";
+        var api = ApiV1($"/brokers/buildings/{buildingId}");
 
         var updateBuildingResponse = await HttpClient.PatchAsJsonAsync(api, updateBuildingRequest);
         var receivedBuildingId = await updateBuildingResponse.Content.ReadFromJsonAsync<Guid>();
