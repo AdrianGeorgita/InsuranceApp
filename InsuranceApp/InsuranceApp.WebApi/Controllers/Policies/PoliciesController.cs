@@ -1,4 +1,5 @@
-﻿using InsuranceApp.Application.Common.Constants;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Policies;
 using InsuranceApp.Application.Policies.DTOs;
@@ -11,7 +12,8 @@ namespace InsuranceApp.WebApi.Controllers.Policies;
 
 [ApiController]
 [Authorize(Roles = AppRoles.Broker)]
-[Route("api/brokers/[controller]")]
+[Route("api/v{version:apiVersion}/brokers/[controller]")]
+[ApiVersion("1.0")]
 public class PoliciesController(IPolicyService policyService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllPoliciesAsync")]

@@ -1,4 +1,5 @@
-﻿using InsuranceApp.Application.Auth;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Auth;
 using InsuranceApp.Application.Auth.DTOs;
 using InsuranceApp.WebApi.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace InsuranceApp.WebApi.Controllers.Auth;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/v{version:apiVersion}/auth")]
+[ApiVersion("1.0")]
 public class AuthController(IAuthService authService) : BaseApiController
 {
 

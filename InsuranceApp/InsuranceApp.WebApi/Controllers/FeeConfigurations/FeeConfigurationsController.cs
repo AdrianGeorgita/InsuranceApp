@@ -1,4 +1,5 @@
-﻿using InsuranceApp.Application.Common.Constants;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.FeeConfigurations;
 using InsuranceApp.Application.Metadata.FeeConfigurations.DTOs;
@@ -10,7 +11,8 @@ namespace InsuranceApp.WebApi.Controllers.FeeConfigurations;
 
 [ApiController]
 [Authorize(Roles = AppRoles.Admin)]
-[Route("api/admin/fees")]
+[Route("api/v{version:apiVersion}/admin/fees")]
+[ApiVersion("1.0")]
 public class FeeConfigurationsController(IFeeConfigurationService feeConfigurationService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllFeeConfigurationsAsync")]

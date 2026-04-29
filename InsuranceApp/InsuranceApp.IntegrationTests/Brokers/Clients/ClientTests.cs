@@ -22,7 +22,7 @@ public class ClientTests : IntegrationTestBase
             PageNumber = 1,
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -71,7 +71,7 @@ public class ClientTests : IntegrationTestBase
             PageNumber = 12512,
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -98,7 +98,7 @@ public class ClientTests : IntegrationTestBase
             PageNumber = 1,
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -127,7 +127,7 @@ public class ClientTests : IntegrationTestBase
             Name = "escu"
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}&name={filter.Name}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}&name={filter.Name}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -172,7 +172,8 @@ public class ClientTests : IntegrationTestBase
         HttpClient.AuthenticateAs(AppRoles.Broker);
         var clientId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f006");
 
-        var clientResponse = await HttpClient.GetAsync($"/api/brokers/clients/{clientId}");
+        var api = ApiV1($"/brokers/clients/{clientId}");
+        var clientResponse = await HttpClient.GetAsync(api);
 
         clientResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -197,7 +198,7 @@ public class ClientTests : IntegrationTestBase
     {
         HttpClient.AuthenticateAs(AppRoles.Broker);
         var clientId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f009");
-        var api = $"/api/brokers/clients/{clientId}";
+        var api = ApiV1($"/brokers/clients/{clientId}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -227,7 +228,8 @@ public class ClientTests : IntegrationTestBase
             Address = "John Does Residence Nr.7"
         };
 
-        var clientResponse = await HttpClient.PostAsJsonAsync("/api/brokers/clients", createClientRequest);
+        var api = ApiV1("/brokers/clients");
+        var clientResponse = await HttpClient.PostAsJsonAsync(api, createClientRequest);
         var clientId = await clientResponse.Content.ReadFromJsonAsync<Guid>();
 
         clientResponse.StatusCode.Should().Be(HttpStatusCode.Created);

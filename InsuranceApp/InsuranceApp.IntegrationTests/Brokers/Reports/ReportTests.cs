@@ -408,7 +408,7 @@ public class ReportTests : IntegrationTestBase
             ["buildingType"] = filter.BuildingType?.ToString()
         };
 
-        return QueryHelpers.AddQueryString("/api/admin/reports", queryParams);
+        return QueryHelpers.AddQueryString(ApiV1("/admin/reports"), queryParams);
     }
 
     private async Task AssertBodyContainsItems(HttpResponseMessage response, PageRequest pageRequest, List<ReportDto> reports, int totalCount)
@@ -453,13 +453,14 @@ public class ReportTests : IntegrationTestBase
             EndDate = "2027-06-01"
         };
 
+        var api = ApiV1($"/brokers/policies");
         var response =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies", createPolicyRequest);
+            await HttpClient.PostAsJsonAsync(api, createPolicyRequest);
         var policyNumber = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         policyNumber.Should().NotBeEmpty();
         response.Headers.Location.Should().NotBeNull();
-        response.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/policies/{policyNumber.ToLower()}");
+        response.Headers.Location.AbsolutePath.Should().Be($"{api}/{policyNumber.ToLower()}");
     }
 }
