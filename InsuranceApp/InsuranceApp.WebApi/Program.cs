@@ -5,6 +5,7 @@ using InsuranceApp.Infrastructure;
 using InsuranceApp.WebApi.ExceptionHandling;
 using InsuranceApp.WebApi.Extensions;
 using InsuranceApp.WebApi.Filters;
+using InsuranceApp.WebApi.Middleware;
 using Serilog;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -41,8 +42,8 @@ public class Program
             });
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.ConfigureApiVersioning();
+        builder.Services.ConfigureSwaggerGen();
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
@@ -86,9 +87,7 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-            app.UseHangfireDashboard();
+            app.UseDeveloperTools();
         }
 
         app.UseSerilogRequestLogging();
@@ -97,6 +96,8 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
+        app.UseMiddleware<RequestContextMiddleware>();
         app.UseAuthorization();
 
         app.UseRateLimiter();

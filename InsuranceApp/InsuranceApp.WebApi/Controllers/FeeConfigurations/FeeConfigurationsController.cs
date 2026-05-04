@@ -1,13 +1,18 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.FeeConfigurations;
 using InsuranceApp.Application.Metadata.FeeConfigurations.DTOs;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.FeeConfigurations;
 
 [ApiController]
-[Route("api/admin/fees")]
+[Authorize(Roles = AppRoles.Admin)]
+[Route("api/v{version:apiVersion}/admin/fees")]
+[ApiVersion("1.0")]
 public class FeeConfigurationsController(IFeeConfigurationService feeConfigurationService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllFeeConfigurationsAsync")]

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Collections.Concurrent;
+using InsuranceApp.Application.Auth;
 using InsuranceApp.Domain.Common.Interfaces;
 using InsuranceApp.Infrastructure.Persistence.Options;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,8 @@ using Microsoft.Extensions.Options;
 namespace InsuranceApp.Infrastructure.Persistence.Interceptors;
 
 public class AuditInterceptor(IAuditEventPublisher auditEventPublisher
-    , ILogger<AuditInterceptor> logger, IOptions<AuditOptions> options) : SaveChangesInterceptor
+    , ILogger<AuditInterceptor> logger, IOptions<AuditOptions> options,
+    RequestContext requestContext) : SaveChangesInterceptor
 {
     private readonly ConcurrentDictionary<Guid, List<IAuditEvent>> _pendingEvents = new();
     private readonly AuditOptions _options = options.Value;
@@ -176,7 +178,7 @@ public class AuditInterceptor(IAuditEventPublisher auditEventPublisher
     private string? FormatValue(string propertyName, object? value) => 
         _options.SensitiveFields?.Contains(propertyName) == true ? "**REDACTED**" : value?.ToString();
 
-    private static AuditEvent CreateAuditEvent(
+    private AuditEvent CreateAuditEvent(
         Guid eventId,
         string rowId,
         string tableName,
@@ -192,7 +194,7 @@ public class AuditInterceptor(IAuditEventPublisher auditEventPublisher
             RowId = rowId,
             TableName = tableName,
             OccurredAt = occurredAt,
-            UserId = Guid.NewGuid(),
+            UserId = requestContext.UserId,
             Action = action,
             ColumnName = columnName,
             OldValue = oldValue?.ToString(),

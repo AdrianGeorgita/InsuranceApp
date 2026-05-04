@@ -1,5 +1,7 @@
 ﻿using InsuranceApp.Infrastructure.Persistence;
+using InsuranceApp.IntegrationTests.Authentication;
 using InsuranceApp.WebApi;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,15 @@ public class InsuranceAppWebApplicationFactory(string connectionString) : WebApp
             {
                 options.UseSqlServer(connectionString);
             });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = TestAuthHandler.Scheme;
+                options.DefaultChallengeScheme = TestAuthHandler.Scheme;
+                options.DefaultScheme = TestAuthHandler.Scheme;
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.Scheme, _ => { });
         });
     }
 }

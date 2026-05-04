@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Policies.DTOs;
 using InsuranceApp.Domain.Enums;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -14,6 +16,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CreateClient_ThenRegisterBuilding_ThenCreatePolicy_ThenActivatePolicy_ShouldAddClientAndBuildingAndPolicyToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createClientRequest = new
         {
             Type = "Individual",
@@ -24,13 +27,14 @@ public class PoliciesTests : IntegrationTestBase
             Address = "John Does Residence Nr.7"
         };
 
-        var clientResponse = await HttpClient.PostAsJsonAsync("/api/brokers/clients", createClientRequest);
+        var api = ApiV1("/brokers/clients");
+        var clientResponse = await HttpClient.PostAsJsonAsync(api, createClientRequest);
         var clientId = await clientResponse.Content.ReadFromJsonAsync<Guid>();
 
         clientResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         clientId.Should().NotBeEmpty();
         clientResponse.Headers.Location.Should().NotBeNull();
-        clientResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/clients/{clientId}");
+        clientResponse.Headers.Location.AbsolutePath.Should().Be($"{api}/{clientId}");
 
         var createBuildingRequest = new
         {
@@ -44,14 +48,15 @@ public class PoliciesTests : IntegrationTestBase
             RiskIndicators = new List<int> { 1, 2 }
         };
 
+        api = ApiV1($"/brokers/clients/{clientId}/buildings");
         var createBuildingResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/clients/{clientId}/buildings", createBuildingRequest);
+            await HttpClient.PostAsJsonAsync(api, createBuildingRequest);
         var buildingId = await createBuildingResponse.Content.ReadFromJsonAsync<Guid>();
 
         createBuildingResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         buildingId.Should().NotBeEmpty();
         createBuildingResponse.Headers.Location.Should().NotBeNull();
-        createBuildingResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/buildings/{buildingId}");
+        createBuildingResponse.Headers.Location.AbsolutePath.Should().Be(ApiV1($"/brokers/buildings/{buildingId}"));
 
         var createPolicyRequest = new
         {
@@ -64,14 +69,15 @@ public class PoliciesTests : IntegrationTestBase
             EndDate = DateTime.UtcNow.AddDays(5).AddYears(1).ToString("yyyy-MM-dd")
         };
 
+        api = ApiV1($"/brokers/policies");
         var createPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies", createPolicyRequest);
+            await HttpClient.PostAsJsonAsync(api, createPolicyRequest);
         var policyNumber = await createPolicyResponse.Content.ReadAsStringAsync();
 
         createPolicyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         policyNumber.Should().NotBeEmpty();
         createPolicyResponse.Headers.Location.Should().NotBeNull();
-        createPolicyResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/policies/{policyNumber.ToLower()}");
+        createPolicyResponse.Headers.Location.AbsolutePath.Should().Be($"{api}/{policyNumber.ToLower()}");
 
         var location = createPolicyResponse.Headers.Location.ToString();
 
@@ -112,14 +118,15 @@ public class PoliciesTests : IntegrationTestBase
             FinalPremium = 99750.0000M,
         });
 
+        api = ApiV1($"/brokers/policies/{policyNumber}/activate");
         var activatePolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies/{policyNumber}/activate", new { });
+            await HttpClient.PostAsJsonAsync(api, new { });
         policyNumber = await activatePolicyResponse.Content.ReadAsStringAsync();
 
         activatePolicyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         policyNumber.Should().NotBeEmpty();
         activatePolicyResponse.Headers.Location.Should().NotBeNull();
-        activatePolicyResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/policies/{policyNumber.ToLower()}");
+        activatePolicyResponse.Headers.Location.AbsolutePath.Should().Be(ApiV1($"/brokers/policies/{policyNumber.ToLower()}"));
 
         location = createPolicyResponse.Headers.Location.ToString();
 
@@ -136,6 +143,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CreatePolicy_GivenInvalidRequest_ShouldNotCreatePolicyAndReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createPolicyRequest = new
         {
             BrokerId = "c8b9d0e1-9999-4999-8999-999999999999",
@@ -147,8 +155,9 @@ public class PoliciesTests : IntegrationTestBase
             EndDate = DateTime.UtcNow.AddDays(4).ToString("yyyy-MM-dd")
         };
 
+        var api = ApiV1($"/brokers/policies");
         var createPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies", createPolicyRequest);
+            await HttpClient.PostAsJsonAsync(api, createPolicyRequest);
         var policyNumber = await createPolicyResponse.Content.ReadAsStringAsync();
         var bodyJson = await createPolicyResponse.Content.ReadAsStringAsync();
         var body = JsonConvert.DeserializeObject<ValidationProblemDetails>(bodyJson);
@@ -168,13 +177,14 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ListAllPoliciesAsync_GivenNoFilter_ShouldReturnPagedListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
             PageNumber = 1,
         };
 
-        var api = $"/api/brokers/policies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/policies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -222,13 +232,14 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ListAllPoliciesAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 10,
             PageNumber = 12512,
         };
 
-        var api = $"/api/brokers/policies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/policies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -248,6 +259,7 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ListAllPoliciesAsync_GivenFilter_ShouldReturnPagedFilteredListOfPolicies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 1,
@@ -260,8 +272,8 @@ public class PoliciesTests : IntegrationTestBase
             StartDate = new DateTime(2025, 01, 01, 0, 0, 0, DateTimeKind.Utc)
         };
 
-        var api = $"/api/brokers/policies?pageSize={pageRequest.PageSize}&pageNumber=" +
-                  $"{pageRequest.PageNumber}&status={filter.Status}&startDate={filter.StartDate}";
+        var api = ApiV1($"/brokers/policies?pageSize={pageRequest.PageSize}&pageNumber=" +
+                  $"{pageRequest.PageNumber}&status={filter.Status}&startDate={filter.StartDate}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -296,9 +308,11 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task GetPolicyByIdAsync_GivenValidPolicyNumber_ShouldReturnDetailedPolicy()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00001";
 
-        var response = await HttpClient.GetAsync($"/api/brokers/policies/{policyNumber}");
+        var api = ApiV1($"/brokers/policies/{policyNumber}");
+        var response = await HttpClient.GetAsync(api);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -342,8 +356,9 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task GetPolicyByIdAsync_GivenNonExistingPolicyNumber_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POLICY-f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f009";
-        var api = $"/api/brokers/policies/{policyNumber}";
+        var api = ApiV1($"/brokers/policies/{policyNumber}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -362,18 +377,19 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CancelPolicyByIdAsync_GivenValidActivePolicy_ShouldCancelPolicy()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00003";
 
+        var api = ApiV1($"/brokers/policies/{policyNumber}/cancel");
         var cancelPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies/{policyNumber}/cancel",
-                new { Reason = "Building demolished" });
+            await HttpClient.PostAsJsonAsync(api, new { Reason = "Building demolished" });
         var updatedPolicyNumber = await cancelPolicyResponse.Content.ReadAsStringAsync();
 
         cancelPolicyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         policyNumber.Should().NotBeEmpty();
         updatedPolicyNumber.Should().Be(policyNumber);
         cancelPolicyResponse.Headers.Location.Should().NotBeNull();
-        cancelPolicyResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/policies/{updatedPolicyNumber.ToLower()}");
+        cancelPolicyResponse.Headers.Location.AbsolutePath.Should().Be(ApiV1($"/brokers/policies/{updatedPolicyNumber.ToLower()}"));
 
         var location = cancelPolicyResponse.Headers.Location.ToString();
 
@@ -390,11 +406,12 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task CancelPolicyByIdAsync_GivenCancelledPolicy_ShouldReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00022";
 
+        var api = ApiV1($"/brokers/policies/{policyNumber}/cancel");
         var cancelPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies/{policyNumber}/cancel",
-                new { Reason = "Building demolished" });
+            await HttpClient.PostAsJsonAsync(api, new { Reason = "Building demolished" });
         var bodyJson = await cancelPolicyResponse.Content.ReadAsStringAsync();
         var body = JsonConvert.DeserializeObject<ProblemDetails>(bodyJson);
 
@@ -409,11 +426,12 @@ public class PoliciesTests : IntegrationTestBase
     [Fact]
     public async Task ActivatePolicyByIdAsync_GivenExpiredPolicy_ShouldReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         const string policyNumber = "POL-00011";
 
+        var api = ApiV1($"/brokers/policies/{policyNumber}/activate");
         var activatePolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies/{policyNumber}/activate",
-                new { Reason = "Building demolished" });
+            await HttpClient.PostAsJsonAsync(api, new { Reason = "Building demolished" });
         var bodyJson = await activatePolicyResponse.Content.ReadAsStringAsync();
         var body = JsonConvert.DeserializeObject<ProblemDetails>(bodyJson);
 

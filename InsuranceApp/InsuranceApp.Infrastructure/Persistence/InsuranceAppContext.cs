@@ -1,12 +1,13 @@
 ﻿using InsuranceApp.Application.Common.Persistence;
 using InsuranceApp.Domain.Entities;
-using InsuranceApp.Domain.Enums;
+using InsuranceApp.Infrastructure.Persistence.Identity;
 using InsuranceApp.Infrastructure.Persistence.Internal;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace InsuranceApp.Infrastructure.Persistence;
 
-public partial class InsuranceAppContext : DbContext, IUnitOfWork
+public partial class InsuranceAppContext : IdentityDbContext<User, Role, Guid>, IUnitOfWork
 {
     public InsuranceAppContext()
     {

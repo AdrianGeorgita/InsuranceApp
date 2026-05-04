@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using InsuranceApp.Application.Buildings.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -13,6 +15,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientBuildingsAsync_GivenExistingClientId_ShouldReturnPagedListOfBuildings()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
@@ -21,7 +24,7 @@ public class ClientBuildingTests : IntegrationTestBase
 
         var clientId = new Guid("a1d4f1a7-1f2e-4b5b-9a2d-01f1e8a3c001");
 
-        var api = $"/api/brokers/clients/{clientId}/buildings?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients/{clientId}/buildings?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var getBuildingResponse = await HttpClient.GetAsync(api);
 
@@ -81,6 +84,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientBuildingsAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfBuildings()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 10,
@@ -89,7 +93,7 @@ public class ClientBuildingTests : IntegrationTestBase
 
         var clientId = new Guid("a1d4f1a7-1f2e-4b5b-9a2d-01f1e8a3c001");
 
-        var api = $"/api/brokers/clients/{clientId}/buildings?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients/{clientId}/buildings?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var getBuildingsResponse = await HttpClient.GetAsync(api);
 
@@ -109,6 +113,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientBuildingsAsync_GivenInvalidPageRequest_ShouldReturnBadRequest()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 160,
@@ -117,7 +122,7 @@ public class ClientBuildingTests : IntegrationTestBase
 
         var clientId = new Guid("a1d4f1a7-1f2e-4b5b-9a2d-01f1e8a3c001");
 
-        var api = $"/api/brokers/clients/{clientId}/buildings?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients/{clientId}/buildings?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var getBuildingsResponse = await HttpClient.GetAsync(api);
 
@@ -134,6 +139,7 @@ public class ClientBuildingTests : IntegrationTestBase
     [Fact]
     public async Task CreateClient_ThenRegisterBuilding_ShouldAddClientAndBuildingToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createClientRequest = new
         {
             Type = "Individual",
@@ -144,13 +150,14 @@ public class ClientBuildingTests : IntegrationTestBase
             Address = "John Does Residence Nr.7"
         };
 
-        var clientResponse = await HttpClient.PostAsJsonAsync("/api/brokers/clients", createClientRequest);
+        var api = ApiV1("/brokers/clients");
+        var clientResponse = await HttpClient.PostAsJsonAsync(api, createClientRequest);
         var clientId = await clientResponse.Content.ReadFromJsonAsync<Guid>();
 
         clientResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         clientId.Should().NotBeEmpty();
         clientResponse.Headers.Location.Should().NotBeNull();
-        clientResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/clients/{clientId}");
+        clientResponse.Headers.Location.AbsolutePath.Should().Be($"{api}/{clientId}");
 
         var createBuildingRequest = new
         {
@@ -164,14 +171,15 @@ public class ClientBuildingTests : IntegrationTestBase
             RiskIndicators = new List<int> { 1, 2 }
         };
 
+        api = ApiV1($"/brokers/clients/{clientId}/buildings");
         var createBuildingResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/clients/{clientId}/buildings", createBuildingRequest);
+            await HttpClient.PostAsJsonAsync(api, createBuildingRequest);
         var buildingId = await createBuildingResponse.Content.ReadFromJsonAsync<Guid>();
 
         createBuildingResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         buildingId.Should().NotBeEmpty();
         createBuildingResponse.Headers.Location.Should().NotBeNull();
-        createBuildingResponse.Headers.Location.AbsolutePath.Should().Be($"/api/brokers/buildings/{buildingId}");
+        createBuildingResponse.Headers.Location.AbsolutePath.Should().Be($"/api/v1/brokers/buildings/{buildingId}");
 
         var location = createBuildingResponse.Headers.Location.ToString();
 

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.IntegrationTests.Extensions;
 
 namespace InsuranceApp.IntegrationTests.Admins.Brokers;
 
@@ -14,15 +16,16 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task ListAllBrokersAsync_ShouldReturnPagedListOfBrokers()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var pageRequest = new
         {
             PageSize = 2,
             PageNumber = 1,
         };
 
-        var api = $"/api/admin/brokers?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = $"/admin/brokers?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
 
-        var response = await HttpClient.GetAsync(api);
+        var response = await HttpClient.GetAsync(ApiV1(api));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -62,9 +65,10 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task GetBrokerByIdAsync_GivenValidBrokerId_ShouldReturnBroker()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var brokerId = new Guid("a0f1b2c3-1111-4111-8111-111111111111");
 
-        var response = await HttpClient.GetAsync($"/api/admin/brokers/{brokerId}");
+        var response = await HttpClient.GetAsync(ApiV1($"/admin/brokers/{brokerId}"));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -87,8 +91,9 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task GetBrokerByIdAsync_GivenNonExistingBrokerId_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var brokerId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f009");
-        var api = $"/api/admin/brokers/{brokerId}";
+        var api = ApiV1($"/admin/brokers/{brokerId}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -107,6 +112,7 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task CreateBroker_GivenValidRequest_ShouldAddBrokerToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var createBrokerRequest = new
         {
             Code = "BRK-RO-999",
@@ -117,7 +123,7 @@ public class BrokerTests : IntegrationTestBase
             Status = BrokerStatus.Active
         };
 
-        var createBrokerResponse = await HttpClient.PostAsJsonAsync("/api/admin/brokers", createBrokerRequest);
+        var createBrokerResponse = await HttpClient.PostAsJsonAsync(ApiV1("/admin/brokers"), createBrokerRequest);
         var brokerId = await createBrokerResponse.Content.ReadFromJsonAsync<Guid>();
 
         createBrokerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -148,6 +154,7 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task CreateBroker_ThenUpdateBroker_ShouldUpdateBrokerInDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var createBrokerRequest = new
         {
             Code = "BRK-RO-999",
@@ -158,7 +165,7 @@ public class BrokerTests : IntegrationTestBase
             Status = BrokerStatus.Active
         };
 
-        var createBrokerResponse = await HttpClient.PostAsJsonAsync("/api/admin/brokers", createBrokerRequest);
+        var createBrokerResponse = await HttpClient.PostAsJsonAsync(ApiV1("/admin/brokers"), createBrokerRequest);
         var brokerId = await createBrokerResponse.Content.ReadFromJsonAsync<Guid>();
 
         createBrokerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -170,13 +177,13 @@ public class BrokerTests : IntegrationTestBase
             Phone = "0783652127",
         };
 
-        var updateBrokerResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/brokers/{brokerId}", updateBrokerRequest);
+        var updateBrokerResponse = await HttpClient.PatchAsJsonAsync(ApiV1($"/admin/brokers/{brokerId}"), updateBrokerRequest);
         var updatedBrokerId = await updateBrokerResponse.Content.ReadFromJsonAsync<Guid>();
 
         updateBrokerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedBrokerId.Should().NotBeEmpty();
 
-        var getBrokerResponse = await HttpClient.GetAsync($"/api/admin/Brokers/{updatedBrokerId}");
+        var getBrokerResponse = await HttpClient.GetAsync(ApiV1($"/admin/Brokers/{updatedBrokerId}"));
         var json = await getBrokerResponse.Content.ReadAsStringAsync();
 
         getBrokerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -198,8 +205,9 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task DeactivateBroker_GivenValidBrokerId_ShouldUpdateBrokerStatusInDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var brokerId = new Guid("a0f1b2c3-1111-4111-8111-111111111111");
-        var activateBrokerResponse = await HttpClient.PostAsJsonAsync($"/api/admin/brokers/{brokerId}/deactivate", new { });
+        var activateBrokerResponse = await HttpClient.PostAsJsonAsync(ApiV1($"/admin/brokers/{brokerId}/deactivate"), new { });
         var updatedBrokerId = await activateBrokerResponse.Content.ReadFromJsonAsync<Guid>();
 
         activateBrokerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -231,8 +239,9 @@ public class BrokerTests : IntegrationTestBase
     [Fact]
     public async Task ActivateBroker_GivenValidInactiveBrokerId_ShouldUpdateBrokerStatusInDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var brokerId = new Guid("b3a4c5d6-eeee-4eee-8eee-eeeeeeeeeeee");
-        var activateBrokerResponse = await HttpClient.PostAsJsonAsync($"/api/admin/brokers/{brokerId}/activate", new { });
+        var activateBrokerResponse = await HttpClient.PostAsJsonAsync(ApiV1($"/admin/brokers/{brokerId}/activate"), new { });
         var updatedBrokerId = await activateBrokerResponse.Content.ReadFromJsonAsync<Guid>();
 
         activateBrokerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -261,10 +270,11 @@ public class BrokerTests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task DeactivateBroker_ThenCreatePolicy_GivenValidInactiveBrokerId_ShoulReturnValidationError()
+    public async Task DeactivateBroker_ThenCreatePolicy_GivenValidInactiveBrokerId_ShouldReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var brokerId = new Guid("a0f1b2c3-1111-4111-8111-111111111111");
-        var activateBrokerResponse = await HttpClient.PostAsJsonAsync($"/api/admin/brokers/{brokerId}/deactivate", new { });
+        var activateBrokerResponse = await HttpClient.PostAsJsonAsync(ApiV1($"/admin/brokers/{brokerId}/deactivate"), new { });
         var updatedBrokerId = await activateBrokerResponse.Content.ReadFromJsonAsync<Guid>();
 
         activateBrokerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -292,6 +302,7 @@ public class BrokerTests : IntegrationTestBase
             CommissionPercentage = 1.2M
         });
 
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createPolicyRequest = new
         {
             BrokerId = brokerId,
@@ -304,7 +315,7 @@ public class BrokerTests : IntegrationTestBase
         };
 
         var createPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies", createPolicyRequest);
+            await HttpClient.PostAsJsonAsync(ApiV1($"/brokers/policies"), createPolicyRequest);
         var policyNumber = await createPolicyResponse.Content.ReadAsStringAsync();
         var bodyJson = await createPolicyResponse.Content.ReadAsStringAsync();
         var body = JsonConvert.DeserializeObject<ValidationProblemDetails>(bodyJson);

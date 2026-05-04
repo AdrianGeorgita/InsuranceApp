@@ -1,13 +1,18 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Geography.Counties;
 using InsuranceApp.Application.Geography.Countries;
 using InsuranceApp.Application.Geography.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Geography.Countries;
 
 [ApiController]
-[Route("api/brokers/[controller]")]
+[Authorize(Roles = AppRoles.Broker)]
+[Route("api/v{version:apiVersion}/brokers/[controller]")]
+[ApiVersion("1.0")]
 public class CountriesController(ICountryService countryService, ICountyService countyService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllCountriesAsync")]

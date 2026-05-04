@@ -1,14 +1,19 @@
-﻿using InsuranceApp.Application.Brokers;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Brokers;
 using InsuranceApp.Application.Brokers.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Domain.Enums;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Brokers;
 
 [ApiController]
-[Route("api/admin/[controller]")]
+[Authorize(Roles = AppRoles.Admin)]
+[Route("api/v{version:apiVersion}/admin/[controller]")]
+[ApiVersion("1.0")]
 public class BrokersController(IBrokerService brokerService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllBrokersAsync")]

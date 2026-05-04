@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.IntegrationTests.Extensions;
 
 namespace InsuranceApp.IntegrationTests.RateLimiter;
 
@@ -7,9 +9,10 @@ public class RateLimiterTests : IntegrationTestBase
     [Fact]
     public async Task ListAllFeeConfigurations_GivenManyConcurrentRequests_ShouldReturnTooManyRequests()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const int requestsToSend = 150;
         const int requestsLimit = 100;
-        const string apiUrl = "http://localhost:5285/api/admin/fees";
+        const string apiUrl = "http://localhost:5285/api/v1/admin/fees";
 
         var failedRequests = 0;
         await Parallel.ForAsync(0, requestsToSend, async (_, _) =>
@@ -27,9 +30,10 @@ public class RateLimiterTests : IntegrationTestBase
     [Fact]
     public async Task ListAllFeeConfigurations_GivenMoreRequestBatchesWithADelayBetweenThem_ShouldNotFailAnyRequest()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const int requestsLimit = 100;
         const int batchesToSend = 2;
-        const string apiUrl = "http://localhost:5285/api/admin/fees";
+        const string apiUrl = "http://localhost:5285/api/v1/admin/fees";
 
         var failedRequests = 0;
         for (var i = 0; i < batchesToSend; i++)
@@ -53,8 +57,9 @@ public class RateLimiterTests : IntegrationTestBase
     [Fact]
     public async Task ListAllFeeConfigurations_GivenLessRequestsThanTheLimit_ShouldNotFailAnyRequest()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const int requestsToSend = 50;
-        const string apiUrl = "http://localhost:5285/api/admin/fees";
+        const string apiUrl = "http://localhost:5285/api/v1/admin/fees";
 
         var failedRequests = 0;
         await Parallel.ForAsync(0, requestsToSend, async (_, _) =>

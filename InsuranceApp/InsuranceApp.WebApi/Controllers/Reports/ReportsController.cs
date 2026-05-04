@@ -1,13 +1,18 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Reports;
 using InsuranceApp.Application.Reports.DTOs;
 using InsuranceApp.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Reports;
 
 [ApiController]
-[Route("api/admin/[controller]")]
+[Authorize(Roles = AppRoles.Admin)]
+[Route("api/v{version:apiVersion}/admin/[controller]")]
+[ApiVersion("1.0")]
 public class ReportsController(IReportService reportService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllReportsAsync")]

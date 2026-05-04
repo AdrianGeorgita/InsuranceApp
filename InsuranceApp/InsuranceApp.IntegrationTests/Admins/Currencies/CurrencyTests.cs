@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.Currencies.DTOs;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -13,13 +15,14 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task ListAllCurrenciesAsync_ShouldReturnPagedListOfCurrencies()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var pageRequest = new
         {
             PageSize = 2,
             PageNumber = 1,
         };
 
-        var api = $"/api/admin/currencies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/admin/currencies?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -57,9 +60,11 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task GetCurrencyByCodeAsync_GivenValidCurrencyCode_ShouldReturnCurrency()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "RON";
 
-        var response = await HttpClient.GetAsync($"/api/admin/currencies/{currencyCode}");
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
+        var response = await HttpClient.GetAsync(api);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -79,8 +84,9 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task GetCurrencyByCodeAsync_GivenNonExistingCurrencyCode_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "XYZ";
-        var api = $"/api/admin/currencies/{currencyCode}";
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
 
         var response = await HttpClient.GetAsync(api);
 
@@ -99,6 +105,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task CreateCurrency_GivenValidRequest_ShouldAddCurrencyToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var createCurrencyRequest = new CreateCurrencyRequest()
         {
             Code = "RBX",
@@ -107,7 +114,8 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = true
         };
 
-        var createCurrencyResponse = await HttpClient.PostAsJsonAsync("/api/admin/currencies", createCurrencyRequest);
+        var api = ApiV1("/admin/currencies");
+        var createCurrencyResponse = await HttpClient.PostAsJsonAsync(api, createCurrencyRequest);
         var currencyCode = await createCurrencyResponse.Content.ReadAsStringAsync();
 
         createCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -137,6 +145,7 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task CreateCurrency_ThenUpdateCurrency_ShouldUpdateCurrencyInDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         var createCurrencyRequest = new CreateCurrencyRequest()
         {
             Code = "RBX",
@@ -145,7 +154,8 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = true
         };
 
-        var createCurrencyResponse = await HttpClient.PostAsJsonAsync("/api/admin/currencies", createCurrencyRequest);
+        var api = ApiV1("/admin/currencies");
+        var createCurrencyResponse = await HttpClient.PostAsJsonAsync(api, createCurrencyRequest);
         var currencyCode = await createCurrencyResponse.Content.ReadAsStringAsync();
 
         createCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -158,14 +168,16 @@ public class CurrencyTests : IntegrationTestBase
             IsActive = false,
         };
 
-        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/currencies/{currencyCode}", updateCurrencyRequest);
+        api = ApiV1($"/admin/currencies/{currencyCode}");
+        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync(api, updateCurrencyRequest);
         var updatedCurrencyCode = await updateCurrencyResponse.Content.ReadAsStringAsync();
 
         updateCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedCurrencyCode.Should().NotBeEmpty();
         updatedCurrencyCode.Should().Be("RBX");
 
-        var getCurrencyResponse = await HttpClient.GetAsync($"/api/admin/currencies/{updatedCurrencyCode}");
+        api = ApiV1($"/admin/currencies/{updatedCurrencyCode}");
+        var getCurrencyResponse = await HttpClient.GetAsync(api);
         var json = await getCurrencyResponse.Content.ReadAsStringAsync();
 
         getCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -185,20 +197,23 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task UpdateCurrency_SetInactive_ThenCreatePolicy_ShouldSetAsDeprecatedAndReturnValidationError()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "HUF";
         var updateCurrencyRequest = new
         {
             IsActive = false,
         };
 
-        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/currencies/{currencyCode}", updateCurrencyRequest);
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
+        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync(api, updateCurrencyRequest);
         var updatedCurrencyCode = await updateCurrencyResponse.Content.ReadAsStringAsync();
 
         updateCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedCurrencyCode.Should().NotBeEmpty();
         updatedCurrencyCode.Should().Be(currencyCode);
 
-        var getCurrencyResponse = await HttpClient.GetAsync($"/api/admin/currencies/{updatedCurrencyCode}");
+        api = ApiV1($"/admin/currencies/{updatedCurrencyCode}");
+        var getCurrencyResponse = await HttpClient.GetAsync(api);
         var json = await getCurrencyResponse.Content.ReadAsStringAsync();
 
         getCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -214,6 +229,7 @@ public class CurrencyTests : IntegrationTestBase
             Deprecated = true
         });
 
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createPolicyRequest = new
         {
             BrokerId = "c8b9d0e1-9999-4999-8999-999999999999",
@@ -225,8 +241,9 @@ public class CurrencyTests : IntegrationTestBase
             EndDate = new DateTime(2027, 04, 02, 0, 0, 0, DateTimeKind.Utc)
         };
 
+        api = ApiV1($"/brokers/policies");
         var createPolicyResponse =
-            await HttpClient.PostAsJsonAsync($"/api/brokers/policies", createPolicyRequest);
+            await HttpClient.PostAsJsonAsync(api, createPolicyRequest);
         var policyNumber = await createPolicyResponse.Content.ReadAsStringAsync();
         var bodyJson = await createPolicyResponse.Content.ReadAsStringAsync();
         var body = JsonConvert.DeserializeObject<ValidationProblemDetails>(bodyJson);
@@ -242,20 +259,23 @@ public class CurrencyTests : IntegrationTestBase
     [Fact]
     public async Task UpdateCurrency_SetInactive_GivenUnusedCurrency_ShouldSetAsInactive()
     {
+        HttpClient.AuthenticateAs(AppRoles.Admin);
         const string currencyCode = "BGN";
         var updateCurrencyRequest = new
         {
             IsActive = false,
         };
 
-        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync($"/api/admin/currencies/{currencyCode}", updateCurrencyRequest);
+        var api = ApiV1($"/admin/currencies/{currencyCode}");
+        var updateCurrencyResponse = await HttpClient.PatchAsJsonAsync(api, updateCurrencyRequest);
         var updatedCurrencyCode = await updateCurrencyResponse.Content.ReadAsStringAsync();
 
         updateCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         updatedCurrencyCode.Should().NotBeEmpty();
         updatedCurrencyCode.Should().Be(currencyCode);
 
-        var getCurrencyResponse = await HttpClient.GetAsync($"/api/admin/currencies/{updatedCurrencyCode}");
+        api = ApiV1($"/admin/currencies/{updatedCurrencyCode}");
+        var getCurrencyResponse = await HttpClient.GetAsync(api);
         var json = await getCurrencyResponse.Content.ReadAsStringAsync();
 
         getCurrencyResponse.StatusCode.Should().Be(HttpStatusCode.OK);

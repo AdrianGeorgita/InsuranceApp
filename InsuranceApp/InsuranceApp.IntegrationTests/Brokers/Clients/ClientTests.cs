@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using InsuranceApp.Application.Clients.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
+using InsuranceApp.IntegrationTests.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -13,13 +15,14 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenNoFilter_ShouldReturnPagedListOfClients()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
             PageNumber = 1,
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -61,13 +64,14 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenOutOfRangePage_ShouldReturnPagedEmptyListOfClients()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 10,
             PageNumber = 12512,
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -87,13 +91,14 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenInvalidPageRequest_ShouldReturnBadRequest()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 160,
             PageNumber = 1,
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -110,6 +115,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task ListAllClientsAsync_GivenFilter_ShouldReturnPagedFilteredListOfClients()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var pageRequest = new
         {
             PageSize = 2,
@@ -121,7 +127,7 @@ public class ClientTests : IntegrationTestBase
             Name = "escu"
         };
 
-        var api = $"/api/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}&name={filter.Name}";
+        var api = ApiV1($"/brokers/clients?pageSize={pageRequest.PageSize}&pageNumber={pageRequest.PageNumber}&name={filter.Name}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -163,9 +169,11 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task GetClientByIdAsync_GivenValidClientId_ShouldReturnClient()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var clientId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f006");
 
-        var clientResponse = await HttpClient.GetAsync($"/api/brokers/clients/{clientId}");
+        var api = ApiV1($"/brokers/clients/{clientId}");
+        var clientResponse = await HttpClient.GetAsync(api);
 
         clientResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -188,8 +196,9 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task GetClientByIdAsync_GivenNonExistingClientId_ShouldReturnNotFound()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var clientId = new Guid("f6b9e0a7-8d55-4c6f-8b8e-56a2d7e8f009");
-        var api = $"/api/brokers/clients/{clientId}";
+        var api = ApiV1($"/brokers/clients/{clientId}");
 
         var clientResponse = await HttpClient.GetAsync(api);
 
@@ -208,6 +217,7 @@ public class ClientTests : IntegrationTestBase
     [Fact]
     public async Task CreateClient_GivenValidRequest_ShouldAddClientToDatabase()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var createClientRequest = new
         {
             Type = "Individual",
@@ -218,7 +228,8 @@ public class ClientTests : IntegrationTestBase
             Address = "John Does Residence Nr.7"
         };
 
-        var clientResponse = await HttpClient.PostAsJsonAsync("/api/brokers/clients", createClientRequest);
+        var api = ApiV1("/brokers/clients");
+        var clientResponse = await HttpClient.PostAsJsonAsync(api, createClientRequest);
         var clientId = await clientResponse.Content.ReadFromJsonAsync<Guid>();
 
         clientResponse.StatusCode.Should().Be(HttpStatusCode.Created);

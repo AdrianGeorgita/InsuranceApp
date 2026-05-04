@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using InsuranceApp.Application.Buildings.DTOs;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.IntegrationTests.Extensions;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
@@ -11,6 +13,7 @@ public class BuildingTests : IntegrationTestBase
     [Fact]
     public async Task UpdateBuildingAsync_GivenValidRequest_ThenGetBuildingById_ShouldReturnUpdatedBuilding()
     {
+        HttpClient.AuthenticateAs(AppRoles.Broker);
         var buildingId = new Guid("a1000004-0000-4000-8000-000000000004");
         var updateBuildingRequest = new
         {
@@ -18,7 +21,7 @@ public class BuildingTests : IntegrationTestBase
             InsuredValue = 5000000
         };
 
-        var api = $"/api/brokers/buildings/{buildingId}";
+        var api = ApiV1($"/brokers/buildings/{buildingId}");
 
         var updateBuildingResponse = await HttpClient.PatchAsJsonAsync(api, updateBuildingRequest);
         var receivedBuildingId = await updateBuildingResponse.Content.ReadFromJsonAsync<Guid>();

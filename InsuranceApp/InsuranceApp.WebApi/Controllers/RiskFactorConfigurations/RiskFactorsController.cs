@@ -1,13 +1,18 @@
-﻿using InsuranceApp.Application.Common.Pagination;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Common.Constants;
+using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.Application.Metadata.RiskFactorConfigurations;
 using InsuranceApp.Application.Metadata.RiskFactorConfigurations.DTOs;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.RiskFactorConfigurations;
 
 [ApiController]
-[Route("api/admin/risk-factors")]
+[Authorize(Roles = AppRoles.Admin)]
+[Route("api/v{version:apiVersion}/admin/risk-factors")]
+[ApiVersion("1.0")]
 public class RiskFactorsController(IRiskFactorConfigurationService riskFactorService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllRiskFactorsAsync")]

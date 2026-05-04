@@ -1,12 +1,17 @@
-﻿using InsuranceApp.Application.Buildings;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Buildings;
 using InsuranceApp.Application.Buildings.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Buildings;
 
 [ApiController]
-[Route("api/brokers/[controller]")]
+[Authorize(Roles = AppRoles.Broker)]
+[Route("api/v{version:apiVersion}/brokers/[controller]")]
+[ApiVersion("1.0")]
 public class BuildingsController(IBuildingService buildingService) : BaseApiController
 {
     [HttpGet("{buildingId:guid}", Name = "GetBuildingByIdAsync")]

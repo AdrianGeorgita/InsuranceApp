@@ -1,15 +1,20 @@
-﻿using InsuranceApp.Application.Buildings.DTOs;
+﻿using Asp.Versioning;
+using InsuranceApp.Application.Buildings.DTOs;
 using InsuranceApp.Application.Clients;
 using InsuranceApp.Application.Clients.Buildings;
 using InsuranceApp.Application.Clients.DTOs;
+using InsuranceApp.Application.Common.Constants;
 using InsuranceApp.Application.Common.Pagination;
 using InsuranceApp.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsuranceApp.WebApi.Controllers.Clients;
 
 [ApiController]
-[Route("api/brokers/[controller]")]
+[Authorize(Roles = AppRoles.Broker)]
+[Route("api/v{version:apiVersion}/brokers/[controller]")]
+[ApiVersion("1.0")]
 public class ClientsController(IClientService clientService, IClientBuildingService clientBuildingService) : BaseApiController
 {
     [HttpGet("", Name = "ListAllClientsAsync")]
